@@ -1,0 +1,40 @@
+data:
+  raw_csv: data/raw/train.csv          # VinDr-CXR annotations (one row per radiologist box)
+  image_dir: data/raw/train_png        # PNGs named <image_id>.png
+  meta_csv: data/raw/train_meta.csv    # original dims (image_id, dim0=height, dim1=width); null if PNGs are full-res
+  out_dir: data/processed
+  val_frac: 0.1
+  test_frac: 0.1
+  wbf_iou: 0.4                         # IoU for fusing boxes across radiologists
+  normal_bg_frac: 0.1                  # share of normal images added to YOLO as background
+  copy_images: false                   # true = copy instead of symlink into yolo/
+  seed: 42
+
+classifier:
+  arch: resnet50
+  img_size: 512
+  epochs: 10
+  batch_size: 16
+  lr: 0.0003
+  num_workers: 4
+  out: runs/classifier/best.pt
+
+detector:
+  weights: yolov8s.pt
+  img_size: 1024
+  epochs: 50
+  batch: 8
+  project: runs/detector
+  name: yolov8s
+  best: runs/detector/yolov8s/weights/best.pt
+
+pipeline:
+  target_sensitivity: 0.95   # gate threshold is picked on val to hit this
+  gate_threshold: 0.3        # used for serving; replace with the value from runs/eval.json
+  temperature: 1.0           # calibration; replace with the value from runs/eval.json
+  det_conf: 0.15             # detector confidence for serving
+  eval_conf: 0.01            # low conf for mAP evaluation
+  map_iou: 0.4               # VinBigData competition metric: mAP@0.4
+
+export:
+  dir: runs/export           # ONNX files from src/export_onnx.py
