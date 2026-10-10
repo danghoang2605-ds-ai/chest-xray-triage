@@ -71,3 +71,21 @@ def sens_spec(y_true, y_pred):
     sens = (y_pred & y_true).sum() / max(y_true.sum(), 1)
     spec = (~y_pred & ~y_true).sum() / max((~y_true).sum(), 1)
     return float(sens), float(spec)
+
+
+def bootstrap_ci(y_true, y_score, stat, n_boot: int = 1000, alpha: float = 0.05, seed: int = 0):
+    """Percentile bootstrap CI for stat(y_true, y_score), resampling studies with replacement.
+
+    Resamples that contain only one class are skipped (AUC and sensitivity need both).
+    """
+    y_true, y_score = np.asarray(y_true), np.asarray(y_score)
+    rng = np.random.default_rng(seed)
+    n, vals = len(y_true), []
+    for _ in range(n_boot):
+        idx = rng.integers(0, n, n)
+        yt = y_true[idx]
+        if yt.min() == yt.max():
+            continue
+        vals.append(stat(yt, y_score[idx]))
+    lo, hi = np.percentile(vals, [100 * alpha / 2, 100 * (1 - alpha / 2)])
+    return float(lo), float(hi)

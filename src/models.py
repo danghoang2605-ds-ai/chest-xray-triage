@@ -29,6 +29,7 @@ def predict_probs(model, loader, device):
     ys, ps = [], []
     for x, y in loader:
         logits = model(x.to(device)).squeeze(1)
-        ps.append(torch.sigmoid(logits.float()).cpu().numpy())
+        # float64 so very confident logits are not rounded to exactly 0 or 1 (calibration needs them)
+        ps.append(torch.sigmoid(logits.double()).cpu().numpy())
         ys.append(np.asarray(y))
     return np.concatenate(ys), np.concatenate(ps)

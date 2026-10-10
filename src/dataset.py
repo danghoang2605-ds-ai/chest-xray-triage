@@ -1,8 +1,9 @@
 import numpy as np
 import pandas as pd
 import torchvision.transforms as T
-from PIL import Image
 from torch.utils.data import Dataset
+
+from src.imaging import load_image
 
 MEAN, STD = (0.485, 0.456, 0.406), (0.229, 0.224, 0.225)
 
@@ -20,9 +21,8 @@ def build_transform(img_size: int, train: bool):
     return T.Compose(t)
 
 
-def load_image(path) -> Image.Image:
-    # CXRs are grayscale; replicate to 3 channels for ImageNet-pretrained backbones
-    return Image.open(path).convert("L").convert("RGB")
+# CXRs are grayscale; load_image replicates them to 3 channels for ImageNet backbones
+# and handles 16-bit PNGs safely (see src/imaging.py).
 
 
 class CXRDataset(Dataset):

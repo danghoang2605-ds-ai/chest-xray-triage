@@ -1,3 +1,7 @@
+profile:
+  name: full
+  note: Full dataset and training budget.
+
 data:
   raw_csv: data/raw/train.csv          # VinDr-CXR annotations (one row per radiologist box)
   image_dir: data/raw/train_png        # PNGs named <image_id>.png
@@ -8,6 +12,7 @@ data:
   wbf_iou: 0.4                         # IoU for fusing boxes across radiologists
   normal_bg_frac: 0.1                  # share of normal images added to YOLO as background
   copy_images: false                   # true = copy instead of symlink into yolo/
+  subset_frac: 1.0                     # < 1.0 = stratified subset for a quick run
   seed: 42
 
 classifier:
@@ -38,3 +43,15 @@ pipeline:
 
 export:
   dir: runs/export           # ONNX files from src/export_onnx.py
+
+impact:
+  # Assumptions for src/impact.py. Change them to match the setting you describe.
+  studies_per_day: 1000        # chest X-ray volume of a mid-size hospital (assumption)
+  gpu_cost_per_hour: 1.00      # USD, on-demand cloud GPU (assumption)
+  prevalence: null             # null = use the abnormal rate of the test split
+
+external:
+  # Optional external validation on NIH ChestX-ray14 (src/external_eval.py).
+  nih_csv: null                # e.g. /kaggle/input/data/Data_Entry_2017.csv
+  nih_images: null             # folder containing images_0xx/images/*.png
+  n_studies: 3000              # stratified sample of frontal views

@@ -1,0 +1,780 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chest X-ray Triage: a two-stage screening pipeline</title>
+<meta name="description" content="Calibrated ResNet-50 gate and YOLOv8 detector for chest X-ray triage on VinDr-CXR. Method, evaluation protocol, interactive figures and a live demo.">
+<meta property="og:title" content="Chest X-ray Triage">
+<meta property="og:description" content="A two-stage chest X-ray screening pipeline: calibrated ResNet-50 gate, YOLOv8 detector, Grad-CAM, FastAPI.">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FFFFFF; --surface: #F4F6F9; --ink: #18212E; --muted: #546173; --rule: #DDE3EA;
+  --accent: #1F5FAD; --finding: #B7790A; --finding-text: #8A5A00; --normal: #6B7F92; --second: #2B8FB3;
+  --ok: #1D6E46; --warn: #A3272D; --code-bg: #F1F3F6;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F161E; --surface: #16212C; --ink: #E3E9EF; --muted: #9AA8B6; --rule: #2A3746;
+    --accent: #86B4F2; --finding: #E6A93A; --finding-text: #F0BC5E; --normal: #8FA2B4; --second: #5FC2E6;
+    --ok: #5CC795; --warn: #FF8F87; --code-bg: #1B2733; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F161E; --surface: #16212C; --ink: #E3E9EF; --muted: #9AA8B6; --rule: #2A3746;
+  --accent: #86B4F2; --finding: #E6A93A; --finding-text: #F0BC5E; --normal: #8FA2B4; --second: #5FC2E6;
+  --ok: #5CC795; --warn: #FF8F87; --code-bg: #1B2733; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--bg); color: var(--ink); font: 400 17px/1.6 var(--sans);
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
+}
+a { color: var(--accent); text-underline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+code, pre { font-family: var(--mono); }
+code { font-size: .88em; background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+pre { background: var(--code-bg); padding: 14px 16px; border-radius: 8px; overflow-x: auto; font-size: 14px; line-height: 1.55; border: 1px solid var(--rule); }
+pre code { background: none; padding: 0; font-size: inherit; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* layout: sticky contents rail + reading column */
+.layout { display: grid; grid-template-columns: 1fr minmax(0, 780px) 1fr; column-gap: 48px; padding: 0 24px; }
+.toc { grid-column: 1; justify-self: end; width: 200px; position: sticky; top: 32px; align-self: start; margin-top: 56px; font-size: 14.5px; }
+main { grid-column: 2; min-width: 0; }
+.toc p { margin: 0 0 8px; font-weight: 600; color: var(--muted); }
+.toc ol { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--rule); }
+.toc a { display: block; padding: 4px 0 4px 14px; margin-left: -2px; border-left: 2px solid transparent; color: var(--muted); text-decoration: none; }
+.toc a:hover { color: var(--ink); }
+.toc a[aria-current="true"] { color: var(--ink); border-left-color: var(--accent); font-weight: 600; }
+@media (max-width: 1180px) { .layout { grid-template-columns: minmax(0, 780px); justify-content: center; } .toc { display: none; } main { grid-column: 1; } }
+
+/* title block */
+.title { text-align: center; padding: 56px 0 28px; border-bottom: 1px solid var(--rule); }
+.title img { width: 64px; height: 64px; }
+.title h1 { font-size: clamp(2rem, 4.2vw, 2.7rem); line-height: 1.15; letter-spacing: -.015em; margin: 14px 0 8px; font-weight: 700; }
+.title .sub { font-size: 1.15rem; color: var(--muted); margin: 0 auto 14px; max-width: 52ch; }
+.title .author { margin: 0 0 20px; }
+.title .author span { display: block; color: var(--muted); font-size: 15px; }
+.links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 18px; }
+.links a { display: inline-flex; align-items: center; gap: 7px; padding: 7px 14px; border: 1px solid var(--rule); border-radius: 999px; color: var(--ink); text-decoration: none; font-weight: 500; font-size: 15px; background: var(--bg); }
+.links a:hover { border-color: var(--ink); }
+.links svg { width: 16px; height: 16px; flex: none; }
+.status { margin: 0 auto; font-size: 14.5px; color: var(--muted); max-width: 46ch; }
+.status i { width: 9px; height: 9px; border-radius: 50%; background: var(--finding); display: inline-block; margin-right: 8px; vertical-align: 1px; }
+
+/* sections */
+section { padding: 36px 0 8px; }
+h2 { font-size: 1.5rem; letter-spacing: -.01em; margin: 0 0 14px; line-height: 1.25; }
+h2 .n { color: var(--muted); font-weight: 500; margin-right: 10px; }
+h3 { font-size: 1.08rem; margin: 22px 0 6px; }
+p { margin: 0 0 14px; max-width: 72ch; }
+ul.b { margin: 0 0 16px; padding-left: 22px; max-width: 72ch; }
+ul.b li { margin: 4px 0; }
+ul.b li::marker { color: var(--muted); }
+.notice { border: 1px solid var(--rule); border-left: 4px solid var(--warn); background: var(--surface); padding: 12px 16px; border-radius: 6px; margin: 24px 0 0; font-size: 15.5px; }
+.notice p { margin: 0; }
+
+/* tables */
+.table-wrap { overflow-x: auto; margin: 6px 0 18px; border: 1px solid var(--rule); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; font-size: 15.5px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--rule); }
+th { background: var(--surface); font-weight: 600; font-size: 14.5px; color: var(--muted); }
+tr:last-child td { border-bottom: 0; }
+td.v { text-align: right; white-space: nowrap; font-weight: 600; }
+.pending { display: inline-block; font-size: 13px; font-weight: 600; color: var(--finding-text); border: 1px solid var(--finding); border-radius: 999px; padding: 1px 9px; }
+
+/* figures */
+figure.fig { margin: 18px 0 26px; }
+.frame { border: 1px solid var(--rule); border-radius: 10px; background: var(--bg); padding: 16px; }
+.frame.scroll { overflow-x: auto; }
+figcaption { font-size: 15px; color: var(--muted); margin-top: 10px; max-width: 72ch; }
+figcaption b { color: var(--ink); }
+.tag { display: inline-block; font-size: 12.5px; font-weight: 600; color: var(--muted); border: 1px solid var(--rule); border-radius: 4px; padding: 0 6px; margin-left: 6px; vertical-align: 1px; }
+.fig-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 720px) { .fig-grid { grid-template-columns: 1fr; } }
+.fig-grid h4 { margin: 0 0 4px; font-size: 14.5px; }
+.fig-grid ul { margin: 0 0 12px; padding-left: 18px; font-size: 15px; }
+.fig-grid ul li { margin: 3px 0; }
+canvas, svg.plot { width: 100%; display: block; }
+.ctl { display: grid; gap: 4px; margin-top: 12px; font-size: 15px; }
+.ctl .row { display: flex; justify-content: space-between; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+.inputs { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; margin-top: 10px; }
+.inputs label { display: grid; gap: 3px; font-size: 14px; color: var(--muted); }
+.inputs input { width: 84px; font: 500 15px var(--sans); padding: 6px 8px; border: 1px solid var(--rule); border-radius: 6px; background: var(--bg); color: var(--ink); }
+.btn { font: 600 14.5px var(--sans); padding: 7px 12px; border-radius: 6px; border: 1px solid var(--accent); background: var(--accent); color: #fff; cursor: pointer; }
+.btn.secondary { background: transparent; color: var(--accent); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+dl.read { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; margin: 12px 0 0; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+dl.read div { padding: 8px 12px; border-bottom: 1px solid var(--rule); }
+dl.read div:nth-child(odd) { border-right: 1px solid var(--rule); }
+dl.read div:nth-last-child(-n+2) { border-bottom: 0; }
+dl.read dt { font-size: 13.5px; color: var(--muted); }
+dl.read dd { margin: 0; font-size: 1.15rem; font-weight: 600; }
+#r-fuse { font-size: 1rem; }
+.key { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13.5px; color: var(--muted); margin-top: 6px; }
+.key i { display: inline-block; width: 11px; height: 11px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+
+.calc { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 14px; }
+.calc label { display: grid; gap: 4px; font-size: 14px; color: var(--muted); }
+.calc input { font: 500 15px var(--sans); padding: 7px 9px; border: 1px solid var(--rule); border-radius: 6px; background: var(--bg); color: var(--ink); width: 100%; }
+.banner { border: 1px solid var(--finding); background: var(--surface); border-radius: 8px; padding: 10px 14px; margin: 0 0 14px; font-size: 15px; }
+h3.sub { font-size: 1.02rem; margin: 22px 0 8px; }
+
+/* live demo */
+ol.steps { padding-left: 22px; max-width: 72ch; }
+ol.steps > li { margin-bottom: 16px; }
+.field { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.field input[type=url] { flex: 1 1 240px; font: 15px var(--sans); padding: 8px 10px; border: 1px solid var(--rule); border-radius: 6px; background: var(--bg); color: var(--ink); }
+.msg { font-size: 14.5px; min-height: 1.4em; margin-top: 6px; }
+.msg.ok { color: var(--ok); } .msg.err { color: var(--warn); }
+#out { display: none; } #out.on { display: block; }
+#out canvas, #out img { max-width: 100%; border-radius: 6px; }
+
+/* references */
+ol.refs { padding-left: 22px; font-size: 15px; color: var(--muted); }
+ol.refs li { margin-bottom: 6px; }
+footer { border-top: 1px solid var(--rule); margin: 40px 0 0; padding: 20px 0 48px; font-size: 14.5px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="toc" aria-label="Contents">
+    <p>Contents</p>
+    <ol>
+      <li><a href="#summary">Summary</a></li>
+      <li><a href="#problem">1. Problem</a></li>
+      <li><a href="#method">2. Method</a></li>
+      <li><a href="#decisions">3. Design decisions</a></li>
+      <li><a href="#figures">4. Interactive figures</a></li>
+      <li><a href="#protocol">5. Evaluation protocol</a></li>
+      <li><a href="#results">6. Results</a></li>
+      <li><a href="#demo">7. Live demo</a></li>
+      <li><a href="#reproduce">8. Reproduce</a></li>
+      <li><a href="#limitations">9. Limitations</a></li>
+      <li><a href="#references">References</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <header class="title">
+      <img src="logo.svg" alt="">
+      <h1>Chest X-ray Triage</h1>
+      <p class="sub">A two-stage screening pipeline: a calibrated ResNet-50 gate decides which studies a YOLOv8 detector needs to read.</p>
+      <p class="author">Dang Hoang<span>University of Georgia</span></p>
+      <div class="links">
+        <a href="https://github.com/danghoang2605-ds-ai/chest-xray-triage"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>Code</a>
+        <a href="https://github.com/danghoang2605-ds-ai/chest-xray-triage/blob/main/docs/MODEL_CARD.md">Model card</a>
+        <a href="https://github.com/danghoang2605-ds-ai/chest-xray-triage/blob/main/docs/GUIDE.md">Guide</a>
+        <a href="https://github.com/danghoang2605-ds-ai/chest-xray-triage/blob/main/notebooks/kaggle_run.ipynb">Kaggle notebook</a>
+      </div>
+      <p class="status" id="status-line"><i aria-hidden="true"></i>Status: code, tests and site complete. Trained results pending.</p>
+    </header>
+
+    <div class="notice" role="note"><p><strong>Research project, not a medical device.</strong> Outputs are not a diagnosis and must not be used for patient care. Do not upload images that contain patient information.</p></div>
+
+    <section id="summary">
+      <h2>Summary</h2>
+      <ul class="b">
+        <li><strong>Task:</strong> flag abnormal chest X-rays and localize 14 finding types, using the public VinDr&#8209;CXR dataset [1].</li>
+        <li><strong>Idea:</strong> about 70% of studies show no finding, so a cheap classifier screens every study and the expensive detector runs only on the ones it flags.</li>
+        <li><strong>Safety rule:</strong> the gate threshold τ is the highest value that keeps sensitivity at 95% on validation data; it is then reported on an untouched test split.</li>
+        <li><strong>Reported:</strong> AUC, sensitivity and specificity with 95% bootstrap confidence intervals, calibration error, mAP@0.4 with and without the gate, and latency (mean and p95) for PyTorch and ONNX.</li>
+        <li><strong>Fairness check:</strong> gate performance by patient sex and age band, with small groups flagged rather than over-interpreted.</li>
+        <li><strong>External validation:</strong> the gate is re-tested unchanged on NIH ChestX-ray14 from a US hospital, and its misses are broken down by finding class.</li>
+        <li><strong>Operational impact:</strong> measured latency and sensitivity converted into GPU hours, cost and missed studies for a stated hospital volume.</li>
+        <li><strong>Engineering:</strong> FastAPI service with Grad-CAM, ONNX export, 51 tests that run without a GPU, an end-to-end smoke test, CI, Docker and a model card.</li>
+      </ul>
+    </section>
+
+    <section id="problem">
+      <h2><span class="n">1</span>Problem</h2>
+      <ul class="b">
+        <li>Object detectors that localize findings are the expensive part of a chest X-ray pipeline, especially at the high resolution small lesions need.</li>
+        <li>Most studies are normal, so running the detector on every study spends most of the compute on images that need none of it.</li>
+        <li>Skipping studies with a fast classifier is only acceptable if that classifier almost never lets an abnormal study through.</li>
+        <li>The question this project answers: <em>how much time can a gate save, and what does it cost in missed findings?</em></li>
+      </ul>
+    </section>
+
+    <section id="method">
+      <h2><span class="n">2</span>Method</h2>
+      <figure class="fig">
+        <div class="frame scroll">
+          <svg class="plot" id="pipeline" viewBox="0 0 980 250" style="min-width:680px" role="img" aria-labelledby="fig1-title">
+            <title id="fig1-title">Pipeline: input, ResNet-50 gate, calibration, threshold decision, YOLOv8 detector, outputs</title>
+          </svg>
+        </div>
+        <figcaption><b>Fig. 1.</b> Inference pipeline. Studies with calibrated probability below τ are cleared without running the detector. Grad-CAM explains the gate decision.</figcaption>
+      </figure>
+      <h3>Stage 1: gate classifier</h3>
+      <ul class="b">
+        <li>ResNet-50 [2] pretrained on ImageNet, final layer replaced by one logit; input 512 × 512.</li>
+        <li>Loss: binary cross-entropy with <code>pos_weight</code> ≈ 2.4 to offset the 70/30 class balance.</li>
+        <li>Augmentation: small rotations, shifts, zoom, brightness and contrast. No horizontal flips.</li>
+        <li>Training: AdamW, cosine learning-rate schedule, mixed precision; the checkpoint with the best validation AUC is kept.</li>
+      </ul>
+      <h3>Calibration and decision</h3>
+      <ul class="b">
+        <li>Temperature scaling [3]: <code>p = σ(z / T)</code>, with T fit by minimizing negative log-likelihood on validation.</li>
+        <li>τ is chosen on the calibrated validation scores as the highest threshold with sensitivity ≥ 0.95.</li>
+      </ul>
+      <h3>Stage 2: detector</h3>
+      <ul class="b">
+        <li>YOLOv8s [4] pretrained on COCO, input 1024 × 1024, 14 classes, horizontal flips disabled.</li>
+        <li>Training labels: boxes from three radiologists fused with Weighted Boxes Fusion [5] at IoU 0.4.</li>
+        <li>10% of normal studies are added as background images to reduce false positives.</li>
+      </ul>
+      <h3>Explainability</h3>
+      <ul class="b">
+        <li>Grad-CAM [6] on the last ResNet block (2048 × 16 × 16) shows which regions raised the gate score.</li>
+      </ul>
+    </section>
+
+    <section id="decisions">
+      <h2><span class="n">3</span>Design decisions</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Decision</th><th>Rationale</th><th>Alternative considered</th></tr></thead>
+          <tbody>
+            <tr><td>Study is abnormal if any radiologist marked a finding</td><td>Maximizes recall for the gate</td><td>Majority vote (2 of 3): cleaner labels, more missed findings</td></tr>
+            <tr><td>Fuse radiologist boxes with WBF</td><td>One consensus box per finding; no duplicate targets</td><td>Keep all boxes (duplicates) or NMS (discards opinions)</td></tr>
+            <tr><td>No horizontal flips</td><td>Chest anatomy is lateralized; several classes depend on side</td><td>Standard flip augmentation</td></tr>
+            <tr><td>Threshold for 95% sensitivity</td><td>Speed must not come from missed findings</td><td>Default 0.5, or maximize Youden's J</td></tr>
+            <tr><td>Choose T and τ on validation only</td><td>Test results stay unbiased</td><td>Tuning on test (data leakage)</td></tr>
+            <tr><td>mAP at IoU 0.4</td><td>Radiologists' boxes vary; matches the competition metric</td><td>mAP@0.5 or 0.5:0.95</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="figures">
+      <h2><span class="n">4</span>Interactive figures</h2>
+      <ul class="b">
+        <li>Figures 2–4 run in your browser and use <strong>simulated data</strong>. They illustrate mechanisms; they are not model results.</li>
+        <li>Figure 5 is a calculator: it uses <strong>your inputs</strong>, with illustrative defaults you can replace with measured values.</li>
+        <li>All controls work with a keyboard. Boxes in Fig. 3 move with the arrow keys after you focus them.</li>
+      </ul>
+
+      <figure class="fig" id="fig2">
+        <div class="frame">
+          <div class="fig-grid">
+            <div>
+              <canvas id="hist" aria-label="Histogram of simulated scores for normal and abnormal studies with the threshold"></canvas>
+              <div class="key"><span><i style="background:var(--normal)"></i>Normal studies</span><span><i style="background:var(--finding)"></i>Abnormal studies</span><span><i style="background:var(--accent)"></i>Threshold τ</span></div>
+              <div class="ctl"><label for="tau"><span class="row"><span>Threshold τ</span><strong class="num" id="tau-v"></strong></span></label>
+                <input type="range" id="tau" min="0.01" max="0.99" step="0.01" value="0.30"></div>
+              <div class="inputs">
+                <label>Gate (ms)<input type="number" id="t-gate" value="8" min="0" step="1"></label>
+                <label>Detector (ms)<input type="number" id="t-det" value="40" min="0" step="1"></label>
+                <button class="btn secondary" id="tau95" type="button">Set τ for 95% sensitivity</button>
+              </div>
+            </div>
+            <div>
+              <h4>What it shows</h4>
+              <ul><li>Raising τ clears more studies and lowers mean time.</li><li>Past a point, it also clears abnormal studies.</li></ul>
+              <h4>Try</h4>
+              <ul><li>Set τ for 95% sensitivity, then compare the mean time with the detector-only time.</li></ul>
+              <dl class="read">
+                <div><dt>Sensitivity</dt><dd class="num" id="r-sens"></dd></div>
+                <div><dt>Specificity</dt><dd class="num" id="r-spec"></dd></div>
+                <div><dt>Sent to detector</dt><dd class="num" id="r-flag"></dd></div>
+                <div><dt>Mean time / study</dt><dd class="num" id="r-lat"></dd></div>
+              </dl>
+            </div>
+          </div>
+        </div>
+        <figcaption><b>Fig. 2.</b> Gate threshold trade-off on 2,000 simulated studies (30% abnormal). Mean time = gate time + fraction sent × detector time. <span class="tag">Simulated data</span></figcaption>
+      </figure>
+
+      <figure class="fig" id="fig3">
+        <div class="frame">
+          <div class="fig-grid">
+            <div>
+              <svg class="plot" id="wbf" viewBox="0 0 480 300" aria-label="Two draggable radiologist boxes and their fused box">
+                <rect id="wbf-bg" width="480" height="300"/>
+                <rect id="fused" fill="none" stroke-width="2.5" stroke-dasharray="7 5"/>
+                <rect id="boxA" tabindex="0" role="button" aria-label="Radiologist A box. Drag, or use arrow keys" stroke-width="2.5" style="cursor:grab"/>
+                <rect id="boxB" tabindex="0" role="button" aria-label="Radiologist B box. Drag, or use arrow keys" stroke-width="2.5" style="cursor:grab"/>
+              </svg>
+              <div class="key"><span><i style="background:var(--finding)"></i>Radiologist A</span><span><i style="background:var(--second)"></i>Radiologist B</span><span><i style="border:2px dashed var(--ink)"></i>Fused box</span></div>
+              <div class="ctl"><label for="iouthr"><span class="row"><span>Fusion threshold (IoU)</span><strong class="num" id="iouthr-v"></strong></span></label>
+                <input type="range" id="iouthr" min="0.1" max="0.9" step="0.05" value="0.4"></div>
+            </div>
+            <div>
+              <h4>What it shows</h4>
+              <ul><li>IoU = overlap area ÷ combined area.</li><li>Boxes with IoU at or above the threshold merge into their average.</li></ul>
+              <h4>Try</h4>
+              <ul><li>Drag box B until the fused box disappears, and note the IoU.</li></ul>
+              <dl class="read">
+                <div><dt>IoU</dt><dd class="num" id="r-iou"></dd></div>
+                <div><dt>Result</dt><dd id="r-fuse"></dd></div>
+              </dl>
+            </div>
+          </div>
+        </div>
+        <figcaption><b>Fig. 3.</b> Weighted Boxes Fusion [5] for two radiologists' boxes of the same finding. The same IoU measure decides a correct detection in mAP@0.4. <span class="tag">Simulated data</span></figcaption>
+      </figure>
+
+      <figure class="fig" id="fig4">
+        <div class="frame">
+          <div class="fig-grid">
+            <div>
+              <svg class="plot" id="cal" viewBox="0 0 480 300" aria-label="Sigmoid curve before and after temperature scaling"></svg>
+              <div class="key"><span><i style="background:var(--normal)"></i>T = 1 (raw)</span><span><i style="background:var(--accent)"></i>Calibrated</span></div>
+              <div class="ctl"><label for="temp"><span class="row"><span>Temperature T</span><strong class="num" id="temp-v"></strong></span></label>
+                <input type="range" id="temp" min="0.5" max="4" step="0.05" value="1.8"></div>
+            </div>
+            <div>
+              <h4>What it shows</h4>
+              <ul><li>T &gt; 1 softens overconfident probabilities.</li><li>Order is unchanged, so AUC is unchanged.</li></ul>
+              <h4>Try</h4>
+              <ul><li>Set T to 1 and to 3, and compare the probability for logit 2.</li></ul>
+              <dl class="read" id="cal-read"></dl>
+            </div>
+          </div>
+        </div>
+        <figcaption><b>Fig. 4.</b> Temperature scaling [3]: p = σ(z / T). In the project, T is fit on validation and saved to <code>eval.json</code>. <span class="tag">Simulated data</span></figcaption>
+      </figure>
+
+      <figure class="fig" id="fig5">
+        <div class="frame">
+          <div class="fig-grid">
+            <div>
+              <div class="calc">
+                <label for="c-vol">Studies per day<input type="number" id="c-vol" value="1000" min="0" step="50"></label>
+                <label for="c-prev">Abnormal share (%)<input type="number" id="c-prev" value="30" min="0" max="100" step="1"></label>
+                <label for="c-sens">Gate sensitivity (%)<input type="number" id="c-sens" value="95" min="0" max="100" step="0.5"></label>
+                <label for="c-sent">Sent to detector (%)<input type="number" id="c-sent" value="47" min="0" max="100" step="1"></label>
+                <label for="c-gate">Gate latency (ms)<input type="number" id="c-gate" value="8" min="0" step="1"></label>
+                <label for="c-det">Detector latency (ms)<input type="number" id="c-det" value="40" min="0" step="1"></label>
+                <label for="c-cost">Compute cost ($/hour)<input type="number" id="c-cost" value="1.00" min="0" step="0.10"></label>
+              </div>
+              <dl class="read">
+                <div><dt>Compute / day, detector only</dt><dd class="num" id="i-det"></dd></div>
+                <div><dt>Compute / day, two-stage</dt><dd class="num" id="i-two"></dd></div>
+                <div><dt>Cost saved / month</dt><dd class="num" id="i-cost"></dd></div>
+                <div><dt>Throughput gain</dt><dd class="num" id="i-gain"></dd></div>
+                <div><dt>Abnormal studies / day</dt><dd class="num" id="i-abn"></dd></div>
+                <div><dt>Cleared by the gate / day</dt><dd class="num" id="i-miss"></dd></div>
+              </dl>
+            </div>
+            <div>
+              <h4>What it shows</h4>
+              <ul><li>Time saved scales with the share of studies the gate clears.</li><li>The price of that saving is abnormal studies the detector never sees.</li><li>On a GPU at hospital volumes, compute cost is small. The gate matters most where the detector is slow: CPU-only or shared hardware.</li></ul>
+              <h4>Try</h4>
+              <ul><li>Set detector latency to 2,000 ms to model a CPU-only workstation, and compare compute per day.</li><li>Lower gate sensitivity to 90% and compare the extra studies cleared per day.</li></ul>
+            </div>
+          </div>
+        </div>
+        <figcaption><b>Fig. 5.</b> Operational impact calculator. GPU time = mean latency × volume on one GPU; studies cleared by the gate = volume × abnormal share × (1 − sensitivity). After a real run, <code>src/impact.py</code> computes the same quantities from measured values. <span class="tag">Illustrative inputs</span></figcaption>
+      </figure>
+    </section>
+
+    <section id="protocol">
+      <h2><span class="n">5</span>Evaluation protocol</h2>
+      <ul class="b">
+        <li><strong>Data:</strong> 15,000 VinDr&#8209;CXR training images, each read by 3 of 17 radiologists [1].</li>
+        <li><strong>Split:</strong> 80 / 10 / 10 train, validation and test at image level, stratified on the abnormal label, fixed seed.</li>
+        <li><strong>Selection:</strong> best epoch, temperature T and threshold τ are chosen on validation. Test is used once.</li>
+        <li><strong>Gate metrics:</strong> AUC; sensitivity and specificity at τ; expected calibration error (15 bins) before and after scaling.</li>
+        <li><strong>Detector metric:</strong> mAP at IoU 0.4 over 14 classes, Pascal VOC all-point interpolation, computed detector-only and two-stage.</li>
+        <li><strong>Uncertainty:</strong> 95% confidence intervals from 1,000 bootstrap resamples of test studies.</li>
+        <li><strong>Subgroups:</strong> AUC, sensitivity and specificity by sex and by age band (&lt;40, 40–59, 60+), from DICOM headers. Groups with fewer than 30 studies or 10 abnormal studies are flagged.</li>
+        <li><strong>Error analysis:</strong> abnormal test studies cleared by the gate, broken down by finding class, with the lowest-scoring cases listed for review.</li>
+        <li><strong>External validation:</strong> NIH ChestX-ray14 (NIH Clinical Center, US), frontal views, stratified sample. Weights, T and τ are reused without retuning. NIH labels are NLP-mined from reports and use a different label set, so this tests transfer, not like-for-like accuracy.</li>
+        <li><strong>Latency:</strong> warm-up runs excluded, GPU synchronized before timing, images preloaded to exclude disk I/O; mean, p50 and p95 per study.</li>
+        <li><strong>Impact model:</strong> GPU time = mean latency × daily volume on one GPU; studies cleared by the gate = volume × prevalence × (1 − sensitivity). Assumptions are printed with every result.</li>
+        <li><strong>Reading the impact numbers:</strong> at tens of milliseconds per study, GPU cost at hospital volumes is small. The case for the gate is throughput on fixed, shared or CPU-only hardware, not cloud spend; the impact table is there to make that trade-off explicit rather than to claim savings.</li>
+      </ul>
+    </section>
+
+    <section id="results">
+      <h2><span class="n">6</span>Results</h2>
+      <p id="results-note">No trained run has been published yet. The table lists every metric that will be reported; values appear automatically when <code>src/report.py</code> publishes <code>results.json</code> from a real run.</p>
+      <div class="table-wrap" id="results-table">
+        <table>
+          <thead><tr><th>Metric (test split)</th><th style="text-align:right">Value</th></tr></thead>
+          <tbody>
+            <tr><td>Gate AUC (95% CI)</td><td class="v"><span class="pending">Pending</span></td></tr>
+            <tr><td>Sensitivity at τ, target 0.95 (95% CI)</td><td class="v"><span class="pending">Pending</span></td></tr>
+            <tr><td>Specificity at τ (95% CI)</td><td class="v"><span class="pending">Pending</span></td></tr>
+            <tr><td>Share of studies sent to the detector</td><td class="v"><span class="pending">Pending</span></td></tr>
+            <tr><td>ECE before → after calibration</td><td class="v"><span class="pending">Pending</span></td></tr>
+            <tr><td>mAP@0.4, detector only</td><td class="v"><span class="pending">Pending</span></td></tr>
+            <tr><td>mAP@0.4, two-stage</td><td class="v"><span class="pending">Pending</span></td></tr>
+            <tr><td>Mean and p95 latency, detector only → two-stage</td><td class="v"><span class="pending">Pending</span></td></tr>
+            <tr><td>Two-stage latency, PyTorch → ONNX</td><td class="v"><span class="pending">Pending</span></td></tr>
+            <tr><td>AUC, sensitivity and specificity by sex and age band</td><td class="v"><span class="pending">Pending</span></td></tr>
+            <tr><td>Gate misses by finding class</td><td class="v"><span class="pending">Pending</span></td></tr>
+            <tr><td>External validation on NIH ChestX-ray14: AUC, sensitivity, specificity (95% CI)</td><td class="v"><span class="pending">Pending</span></td></tr>
+            <tr><td>GPU hours, cost saved and studies cleared by the gate (measured inputs)</td><td class="v"><span class="pending">Pending</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="results-figs"></div>
+    </section>
+
+    <section id="demo">
+      <h2><span class="n">7</span>Live demo</h2>
+      <ul class="b">
+        <li>Runs the real model through the API on your machine. This page only sends the image to the address you enter.</li>
+        <li>Requires trained weights; see section 8.</li>
+      </ul>
+      <ol class="steps">
+        <li><strong>Start the API</strong>
+<pre><code>CLS_CKPT=weights/classifier.pt DET_WEIGHTS=weights/detector.pt \
+uvicorn app.server:app --port 8000</code></pre></li>
+        <li><strong>Connect</strong>
+          <div class="field"><input type="url" id="api" value="http://localhost:8000" aria-label="API address"><button class="btn" id="connect" type="button">Connect</button></div>
+          <div class="msg" id="api-msg" role="status"></div></li>
+        <li><strong>Choose an image and analyze it</strong>
+          <div class="field"><input type="file" id="file" accept="image/png,image/jpeg" aria-label="Chest X-ray image (PNG or JPEG)"></div>
+          <div class="field"><button class="btn" id="analyze" type="button" disabled>Analyze</button><button class="btn secondary" id="explain" type="button" disabled>Show Grad-CAM</button></div>
+          <div class="msg" id="run-msg" role="status"></div></li>
+      </ol>
+      <figure class="fig" id="out">
+        <div class="frame">
+          <canvas id="out-canvas" aria-label="Image with predicted boxes"></canvas>
+          <img id="out-cam" alt="Grad-CAM heatmap for the gate decision" hidden style="margin-top:12px">
+          <div class="table-wrap" style="margin-top:12px"><table><tbody id="out-rows"></tbody></table></div>
+        </div>
+        <figcaption><b>Output.</b> Boxes from the detector, gate probability and timings returned by your API.</figcaption>
+      </figure>
+    </section>
+
+    <section id="reproduce">
+      <h2><span class="n">8</span>Reproduce</h2>
+      <ul class="b">
+        <li>Requirements: Python 3.10+; a GPU for training (a free Kaggle T4 is enough).</li>
+        <li>The full run is also available as <code>notebooks/kaggle_run.ipynb</code>, or <code>make all</code>. Use <code>configs/quick.yaml</code> (<code>make quick</code>) for a first run in about 1–2 hours.</li>
+        <li><code>python scripts/smoke_test.py</code> checks every stage end to end on synthetic data in a few minutes.</li>
+      </ul>
+<pre><code>git clone https://github.com/danghoang2605-ds-ai/chest-xray-triage.git && cd chest-xray-triage
+pip install -r requirements.txt
+python -m src.data             --config configs/default.yaml   # labels, WBF boxes, YOLO dataset
+python -m src.train_classifier --config configs/default.yaml   # stage 1
+python -m src.train_detector   --config configs/default.yaml   # stage 2
+python -m src.evaluate         --config configs/default.yaml   # AUC + CIs, calibration, subgroups, mAP
+python -m src.error_analysis   --config configs/default.yaml   # gate misses by finding class
+python -m src.external_eval    --config configs/default.yaml   # optional: NIH ChestX-ray14
+python -m src.benchmark        --config configs/default.yaml --half
+python -m src.impact           --config configs/default.yaml   # compute time, cost, studies cleared
+python -m src.plots --config configs/default.yaml &amp;&amp; python -m src.report   # figures, README, this page</code></pre>
+    </section>
+
+    <section id="limitations">
+      <h2><span class="n">9</span>Limitations</h2>
+      <ul class="b">
+        <li><strong>Single-country training data.</strong> VinDr&#8209;CXR comes from Vietnamese hospitals. The NIH ChestX-ray14 check measures transfer to one US source; it does not replace prospective validation, and its NLP-mined labels limit what it can show.</li>
+        <li><strong>Label noise.</strong> Radiologists often disagree; the "any radiologist" rule trades noise for recall.</li>
+        <li><strong>Small findings.</strong> AP for small lesions such as nodules is typically low.</li>
+        <li><strong>Single point of failure.</strong> A study the gate clears is never read by the detector. Two-stage mAP measures this cost but does not remove it.</li>
+        <li><strong>Explanations.</strong> Grad-CAM shows where the classifier attended, not that its reasoning is correct.</li>
+      </ul>
+    </section>
+
+    <section id="references">
+      <h2>References</h2>
+      <ol class="refs">
+        <li>Nguyen, H. Q. et al. VinDr-CXR: An open dataset of chest X-rays with radiologist's annotations. <em>Scientific Data</em> 9, 429 (2022).</li>
+        <li>He, K., Zhang, X., Ren, S. &amp; Sun, J. Deep residual learning for image recognition. <em>CVPR</em> (2016).</li>
+        <li>Guo, C., Pleiss, G., Sun, Y. &amp; Weinberger, K. Q. On calibration of modern neural networks. <em>ICML</em> (2017).</li>
+        <li>Jocher, G., Chaurasia, A. &amp; Qiu, J. Ultralytics YOLOv8 (2023).</li>
+        <li>Solovyev, R., Wang, W. &amp; Gabruseva, T. Weighted boxes fusion: Ensembling boxes from different object detection models. <em>Image and Vision Computing</em> 107 (2021).</li>
+        <li>Selvaraju, R. R. et al. Grad-CAM: Visual explanations from deep networks via gradient-based localization. <em>ICCV</em> (2017).</li>
+      </ol>
+    </section>
+
+    <footer>
+      <p>MIT License for the code. The dataset and trained weights are not distributed. Source: <a href="https://github.com/danghoang2605-ds-ai/chest-xray-triage">github.com/danghoang2605-ds-ai/chest-xray-triage</a></p>
+    </footer>
+  </main>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const pct = (x) => (x * 100).toFixed(1) + "%";
+  const sig = (z) => 1 / (1 + Math.exp(-z));
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  /* ---------- contents rail: highlight the section in view ---------- */
+  const tocLinks = [...document.querySelectorAll(".toc a")];
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      tocLinks.forEach((a) => a.setAttribute("aria-current", a.getAttribute("href") === "#" + e.target.id ? "true" : "false"));
+    });
+  }, { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll("main section[id]").forEach((s) => io.observe(s));
+
+  /* ---------- Fig. 1: pipeline diagram ---------- */
+  function drawPipeline() {
+    const ink = css("--ink"), muted = css("--muted"), rule = css("--rule"), acc = css("--accent"), fin = css("--finding"), bg = css("--surface");
+    const box = (x, y, w, h, title, lines, stroke = rule) => `
+      <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="${bg}" stroke="${stroke}" stroke-width="1.8"/>
+      <text x="${x + 14}" y="${y + 28}" font-size="16" font-weight="600" fill="${ink}">${title}</text>
+      ${lines.map((l, i) => `<text x="${x + 14}" y="${y + 52 + i * 21}" font-size="14.5" fill="${muted}">${l}</text>`).join("")}`;
+    const arrow = (x1, y1, x2, y2, dashed = false) =>
+      `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${muted}" stroke-width="1.8" ${dashed ? 'stroke-dasharray="5 4"' : ""} marker-end="url(#ah)"/>`;
+    const label = (x, y, t, anchor = "middle") => `<text x="${x}" y="${y}" font-size="15" fill="${muted}" text-anchor="${anchor}">${t}</text>`;
+    const cy = 128;
+    $("pipeline").setAttribute("viewBox", "0 0 990 300");
+    $("pipeline").innerHTML = `<title id="fig1-title">Pipeline: input, ResNet-50 gate, calibration, threshold decision, YOLOv8 detector, outputs</title>
+      <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="${muted}"/></marker></defs>
+      ${box(4, 82, 122, 92, "Input", ["Chest X-ray", "PNG / JPEG"])}
+      ${arrow(126, cy, 156, cy)}
+      ${box(158, 82, 180, 92, "Stage 1: gate", ["ResNet-50", "512² → logit z"], acc)}
+      ${arrow(338, cy, 368, cy)}
+      ${box(370, 82, 152, 92, "Calibrate", ["p = σ(z / T)", "T from val"])}
+      ${arrow(522, cy, 550, cy)}
+      <polygon points="600,${cy - 48} 650,${cy} 600,${cy + 48} 550,${cy}" fill="${bg}" stroke="${ink}" stroke-width="1.8"/>
+      <text x="600" y="${cy + 6}" font-size="16" font-weight="600" fill="${ink}" text-anchor="middle">p ≥ τ</text>
+      ${arrow(650, cy, 690, cy)}${label(670, cy - 10, "yes")}
+      ${box(692, 82, 184, 92, "Stage 2: detect", ["YOLOv8s", "1024² input"], fin)}
+      ${arrow(876, cy, 900, cy)}
+      <text x="904" y="${cy - 4}" font-size="16" font-weight="600" fill="${ink}">Boxes</text>
+      <text x="904" y="${cy + 18}" font-size="14.5" fill="${muted}">14 types</text>
+      ${arrow(600, cy + 48, 600, 222)}${label(610, cy + 76, "no", "start")}
+      ${box(520, 224, 168, 70, "Cleared", ["detector skipped"])}
+      ${arrow(248, 82, 248, 40, true)}${label(260, 34, "Grad-CAM heatmap", "start")}`;
+  }
+
+  /* ---------- Fig. 2: gate threshold (simulated) ---------- */
+  function rng(seed) { return () => { seed |= 0; seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  const rand = rng(7), gauss = () => Math.sqrt(-2 * Math.log(rand() + 1e-12)) * Math.cos(2 * Math.PI * rand());
+  const N = 2000, normals = [], abnormals = [];
+  for (let i = 0; i < N; i++) {
+    if (rand() < 0.3) abnormals.push(sig(1.3 + 1.25 * gauss()));
+    else normals.push(sig(-1.7 + 1.1 * gauss()));
+  }
+  const sortedAb = [...abnormals].sort((a, b) => a - b);
+  const canvas = $("hist"), ctx = canvas.getContext("2d");
+  function drawHist() {
+    const dpr = window.devicePixelRatio || 1, w = canvas.clientWidth || 420, h = Math.round(w * 0.6);
+    canvas.width = w * dpr; canvas.height = h * dpr; canvas.style.height = h + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
+    const tau = +$("tau").value, bins = 30, top = 20, bottom = 22, plotH = h - top - bottom, x0 = 2, pw = w - 4;
+    const count = (arr) => { const b = new Array(bins).fill(0); arr.forEach((s) => b[Math.min(bins - 1, Math.floor(s * bins))]++); return b; };
+    const bn = count(normals), ba = count(abnormals), max = Math.max(...bn, ...ba), bw = pw / bins;
+    ctx.fillStyle = css("--surface"); ctx.fillRect(x0, top, tau * pw, plotH);
+    const bars = (b, color, alpha) => { ctx.globalAlpha = alpha; ctx.fillStyle = color; b.forEach((v, i) => { const bh = (v / max) * plotH; ctx.fillRect(x0 + i * bw + 1, top + plotH - bh, bw - 2, bh); }); ctx.globalAlpha = 1; };
+    bars(bn, css("--normal"), 0.85); bars(ba, css("--finding"), 0.85);
+    ctx.strokeStyle = css("--rule"); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x0, top + plotH + .5); ctx.lineTo(x0 + pw, top + plotH + .5); ctx.stroke();
+    const tx = x0 + tau * pw; ctx.strokeStyle = css("--accent"); ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(tx, top - 6); ctx.lineTo(tx, top + plotH); ctx.stroke();
+    ctx.font = "13px " + css("--sans"); ctx.fillStyle = css("--muted");
+    ctx.textAlign = "left"; ctx.fillText("0", x0, h - 5); ctx.textAlign = "right"; ctx.fillText("1", x0 + pw, h - 5);
+    ctx.textAlign = "center"; ctx.fillText("score", x0 + pw / 2, h - 5);
+    ctx.fillStyle = css("--ink"); ctx.textAlign = tau > 0.5 ? "right" : "left";
+    ctx.fillText(tau > 0.5 ? "cleared" : "flagged", tx + (tau > 0.5 ? -6 : 6), top + 4);
+  }
+  function updateGate() {
+    const tau = +$("tau").value; $("tau-v").textContent = tau.toFixed(2);
+    const tp = abnormals.filter((s) => s >= tau).length, tn = normals.filter((s) => s < tau).length;
+    const sent = (tp + normals.length - tn) / N, tg = Math.max(0, +$("t-gate").value || 0), td = Math.max(0, +$("t-det").value || 0);
+    $("r-sens").textContent = pct(tp / abnormals.length);
+    $("r-spec").textContent = pct(tn / normals.length);
+    $("r-flag").textContent = pct(sent);
+    $("r-lat").textContent = (tg + sent * td).toFixed(1) + " ms";
+    drawHist();
+  }
+  ["tau", "t-gate", "t-det"].forEach((id) => $(id).addEventListener("input", updateGate));
+  $("tau95").addEventListener("click", () => { $("tau").value = Math.max(0.01, Math.floor(sortedAb[Math.floor(0.05 * sortedAb.length)] * 100) / 100).toFixed(2); updateGate(); });
+
+  /* ---------- Fig. 3: box fusion ---------- */
+  const svg = $("wbf"), A = { x: 110, y: 80, w: 170, h: 130 }, B = { x: 150, y: 110, w: 160, h: 120 };
+  const setRect = (el, r) => { el.setAttribute("x", r.x); el.setAttribute("y", r.y); el.setAttribute("width", r.w); el.setAttribute("height", r.h); };
+  const iou = (a, b) => { const ix = Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)), iy = Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y)), inter = ix * iy; return inter / (a.w * a.h + b.w * b.h - inter); };
+  function styleWbf() {
+    $("wbf-bg").setAttribute("fill", css("--surface"));
+    const a = $("boxA"), b = $("boxB");
+    a.setAttribute("stroke", css("--finding")); a.setAttribute("fill", css("--finding")); a.setAttribute("fill-opacity", ".14");
+    b.setAttribute("stroke", css("--second")); b.setAttribute("fill", css("--second")); b.setAttribute("fill-opacity", ".14");
+    $("fused").setAttribute("stroke", css("--ink"));
+  }
+  function updateWbf() {
+    setRect($("boxA"), A); setRect($("boxB"), B);
+    const v = iou(A, B), thr = +$("iouthr").value, f = $("fused");
+    $("iouthr-v").textContent = thr.toFixed(2); $("r-iou").textContent = v.toFixed(2);
+    if (v >= thr) { setRect(f, { x: (A.x + B.x) / 2, y: (A.y + B.y) / 2, w: (A.w + B.w) / 2, h: (A.h + B.h) / 2 }); f.style.display = ""; $("r-fuse").textContent = "Fused"; }
+    else { f.style.display = "none"; $("r-fuse").textContent = "Kept separate"; }
+  }
+  function draggable(el, r) {
+    let start = null;
+    const pt = (e) => { const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); };
+    const clamp = () => { r.x = Math.max(0, Math.min(480 - r.w, r.x)); r.y = Math.max(0, Math.min(300 - r.h, r.y)); };
+    el.addEventListener("pointerdown", (e) => { el.setPointerCapture(e.pointerId); const p = pt(e); start = { dx: p.x - r.x, dy: p.y - r.y }; el.style.cursor = "grabbing"; });
+    el.addEventListener("pointermove", (e) => { if (!start) return; const p = pt(e); r.x = p.x - start.dx; r.y = p.y - start.dy; clamp(); updateWbf(); });
+    const end = () => { start = null; el.style.cursor = "grab"; };
+    el.addEventListener("pointerup", end); el.addEventListener("pointercancel", end);
+    el.addEventListener("keydown", (e) => {
+      const s = e.shiftKey ? 20 : 5, m = { ArrowLeft: [-s, 0], ArrowRight: [s, 0], ArrowUp: [0, -s], ArrowDown: [0, s] }[e.key];
+      if (!m) return; e.preventDefault(); r.x += m[0]; r.y += m[1]; clamp(); updateWbf();
+    });
+  }
+  draggable($("boxA"), A); draggable($("boxB"), B);
+  $("iouthr").addEventListener("input", updateWbf);
+
+  /* ---------- Fig. 4: calibration ---------- */
+  const W = 480, H = 300, P = 34, xs = (z) => P + ((z + 6) / 12) * (W - 2 * P), ys = (p) => H - P - p * (H - 2 * P);
+  const curve = (T) => { let d = ""; for (let z = -6; z <= 6.001; z += 0.1) d += (d ? "L" : "M") + xs(z).toFixed(1) + " " + ys(sig(z / T)).toFixed(1); return d; };
+  function updateCal() {
+    const T = +$("temp").value, pts = [1, 2, 4], rule = css("--rule"), muted = css("--muted");
+    $("temp-v").textContent = T.toFixed(2);
+    $("cal").innerHTML = `
+      <rect width="${W}" height="${H}" fill="${css("--surface")}"/>
+      <line x1="${P}" y1="${H - P}" x2="${W - P}" y2="${H - P}" stroke="${rule}"/>
+      <line x1="${P}" y1="${P}" x2="${P}" y2="${H - P}" stroke="${rule}"/>
+      <line x1="${xs(0)}" y1="${P}" x2="${xs(0)}" y2="${H - P}" stroke="${rule}" stroke-dasharray="4 4"/>
+      <line x1="${P}" y1="${ys(0.5)}" x2="${W - P}" y2="${ys(0.5)}" stroke="${rule}" stroke-dasharray="4 4"/>
+      <text x="${P}" y="${H - 12}" fill="${muted}" font-size="13">−6</text>
+      <text x="${W / 2}" y="${H - 12}" fill="${muted}" font-size="13" text-anchor="middle">logit z</text>
+      <text x="${W - P}" y="${H - 12}" fill="${muted}" font-size="13" text-anchor="end">+6</text>
+      <text x="${P - 8}" y="${ys(1) + 4}" fill="${muted}" font-size="13" text-anchor="end">1</text>
+      <text x="${P - 8}" y="${ys(0.5) + 4}" fill="${muted}" font-size="13" text-anchor="end">.5</text>
+      <text x="${P - 8}" y="${ys(0) + 4}" fill="${muted}" font-size="13" text-anchor="end">0</text>
+      <path d="${curve(1)}" fill="none" stroke="${css("--normal")}" stroke-width="2.5"/>
+      <path d="${curve(T)}" fill="none" stroke="${css("--accent")}" stroke-width="3"/>
+      ${pts.map((z) => `<circle cx="${xs(z)}" cy="${ys(sig(z / T))}" r="4.5" fill="${css("--accent")}"/>`).join("")}`;
+    $("cal-read").innerHTML = pts.concat([0]).slice(0, 4).map((z) => z === 0
+      ? `<div><dt>AUC</dt><dd>Unchanged</dd></div>`
+      : `<div><dt>p at logit ${z}</dt><dd class="num">${sig(z).toFixed(2)} → ${sig(z / T).toFixed(2)}</dd></div>`).join("");
+  }
+  $("temp").addEventListener("input", updateCal);
+
+  /* ---------- Fig. 5: impact calculator ---------- */
+  const usd = (x) => "$" + (x < 100 ? x.toFixed(2) : Math.round(x).toLocaleString("en-US"));
+  const dur = (h) => (h < 1 ? (h * 60).toFixed(1) + " min" : h.toFixed(2) + " h");
+  function updateImpact() {
+    const v = (id) => Math.max(0, +$(id).value || 0);
+    const vol = v("c-vol"), prev = Math.min(100, v("c-prev")) / 100, sens = Math.min(100, v("c-sens")) / 100;
+    const sent = Math.min(100, v("c-sent")) / 100, tg = v("c-gate"), td = v("c-det"), cost = v("c-cost");
+    const two = tg + sent * td, hours = (ms) => vol * ms / 1000 / 3600;
+    $("i-det").textContent = dur(hours(td));
+    $("i-two").textContent = dur(hours(two));
+    $("i-cost").textContent = usd((hours(td) - hours(two)) * 30 * cost);
+    $("i-gain").textContent = two > 0 ? (td / two).toFixed(2) + "×" : "n/a";
+    $("i-abn").textContent = Math.round(vol * prev).toLocaleString("en-US");
+    $("i-miss").textContent = (vol * prev * (1 - sens)).toFixed(1);
+  }
+  ["c-vol", "c-prev", "c-sens", "c-sent", "c-gate", "c-det", "c-cost"].forEach((id) => $(id).addEventListener("input", updateImpact));
+
+  /* ---------- Results: only from results.json (real runs) ---------- */
+  const fmt = (x) => (x === null || x === undefined ? "n/a" : (+x).toFixed(3));
+  const kvTable = (head, rows) => `<div class="table-wrap"><table><thead><tr><th>${head}</th><th style="text-align:right">Value</th></tr></thead><tbody>${
+    rows.map((r) => `<tr><td>${esc(r.metric)}</td><td class="v num">${esc(r.value)}</td></tr>`).join("")}</tbody></table></div>`;
+  const groupTable = (title, rows) => `<h3 class="sub">${esc(title)}</h3><div class="table-wrap"><table><thead><tr><th>Group</th><th>n</th><th>Abnormal</th><th>AUC</th><th>Sensitivity</th><th>Specificity</th></tr></thead><tbody>${
+    rows.map((r) => `<tr><td>${esc(r.group)}${r.small_sample ? ' <span class="pending">Small sample</span>' : ""}</td><td class="num">${r.n}</td><td class="num">${r.n_abnormal}</td><td class="num">${fmt(r.auc)}</td><td class="num">${fmt(r.sensitivity)}</td><td class="num">${fmt(r.specificity)}</td></tr>`).join("")}</tbody></table></div>`;
+  if (location.protocol !== "file:") fetch("results.json", { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)).then((d) => {
+    const has = (k) => d && Array.isArray(d[k]) && d[k].length;
+    if (!d || !["rows", "figures", "gate_misses", "external", "impact"].some(has)) return;
+    let html = "";
+    if (d.profile && d.profile.name !== "full") html += `<p class="banner"><strong>Run profile: ${esc(d.profile.name)}.</strong> ${esc(d.profile.note || "")}</p>`;
+    if (has("rows")) html += kvTable(`Metric (test split${d.n_test_images ? ", " + d.n_test_images + " studies" : ""})`, d.rows);
+    const sg = d.subgroups || {};
+    if (sg.sex && sg.sex.length) html += groupTable("Performance by sex (at τ)", sg.sex);
+    if (sg.age && sg.age.length) html += groupTable("Performance by age band (at τ)", sg.age);
+    if (has("gate_misses")) {
+      html += `<h3 class="sub">Where the gate misses (test split)</h3><p>Abnormal studies the gate cleared, by finding class. The detector never read these.</p><div class="table-wrap"><table><thead><tr><th>Finding</th><th>Abnormal studies</th><th>Missed by gate</th><th>Miss rate</th></tr></thead><tbody>${
+        d.gate_misses.map((g) => `<tr><td>${esc(g.finding)}</td><td class="num">${g.abnormal_studies}</td><td class="num">${g.missed_by_gate}</td><td class="num">${(100 * g.miss_rate).toFixed(1)}%</td></tr>`).join("")}</tbody></table></div>`;
+    }
+    if (has("external")) {
+      html += `<h3 class="sub">External validation: NIH ChestX-ray14 (US)</h3><ul class="b">${(d.external_caveats || []).map((c) => `<li>${esc(c)}</li>`).join("")}</ul>` + kvTable("Metric", d.external);
+      const xs = d.external_subgroups || {};
+      if (xs.sex && xs.sex.length) html += groupTable("NIH: performance by sex (at τ)", xs.sex);
+      if (xs.age && xs.age.length) html += groupTable("NIH: performance by age band (at τ)", xs.age);
+    }
+    if (d.impact && d.impact.length) {
+      const a = d.impact_assumptions || {};
+      html += `<h3 class="sub">Operational impact (estimate from measured values)</h3><p>Assumptions: ${(+a.studies_per_day).toLocaleString("en-US")} studies per day, $${(+a.gpu_cost_per_hour).toFixed(2)} per GPU-hour, abnormal share ${(100 * a.prevalence).toFixed(1)}%. Model: ${esc(a.model || "")}.</p>` + kvTable("Quantity", d.impact);
+    }
+    $("results-table").outerHTML = `<div id="results-table">${html}</div>`;
+    $("results-note").textContent = "Results from the published run. Thresholds and temperature were chosen on validation only; intervals are 95% bootstrap confidence intervals.";
+    $("status-line").lastChild.textContent = d.profile && d.profile.name !== "full"
+      ? `Status: code, tests and site complete. Preliminary results (${d.profile.name} profile) published.`
+      : "Status: code, tests, site and trained results published.";
+    if (has("figures")) {
+      $("results-figs").innerHTML = d.figures.map((f, i) => `<figure class="fig"><div class="frame"><img src="${esc(f.file)}" alt="${esc(f.title)}" loading="lazy" style="width:100%"></div><figcaption><b>Fig. ${6 + i}.</b> ${esc(f.title)}.</figcaption></figure>`).join("");
+    }
+  }).catch(() => {});
+
+  /* ---------- Live demo ---------- */
+  let base = "", file = null, img = null;
+  try { const saved = localStorage.getItem("cxr-api"); if (saved) $("api").value = saved; } catch (_) {}
+  const msg = (id, text, kind) => { const el = $(id); el.textContent = text; el.className = "msg" + (kind ? " " + kind : ""); };
+  const ready = () => { $("analyze").disabled = $("explain").disabled = !(base && file); };
+  $("connect").addEventListener("click", async () => {
+    const url = $("api").value.trim().replace(/\/+$/, ""); msg("api-msg", "Connecting…");
+    try {
+      const h = await (await fetch(url + "/health")).json();
+      if (!h.model_loaded) throw new Error("model");
+      base = url; try { localStorage.setItem("cxr-api", url); } catch (_) {}
+      msg("api-msg", `Connected. Backend: ${h.backend}. τ = ${(+h.gate_threshold).toFixed(2)}.`, "ok");
+    } catch (e) {
+      base = "";
+      msg("api-msg", e.message === "model" ? "The server is running but no model is loaded. Check CLS_CKPT and DET_WEIGHTS." : "Could not reach the server. Check that it is running and that CORS_ORIGINS includes this page.", "err");
+    }
+    ready();
+  });
+  $("file").addEventListener("change", (e) => {
+    file = e.target.files[0] || null; ready(); if (!file) return;
+    img = new Image(); img.onload = () => drawOut([]); img.src = URL.createObjectURL(file);
+    $("out-cam").hidden = true; $("out-rows").innerHTML = "";
+  });
+  function drawOut(dets) {
+    const c = $("out-canvas"), g = c.getContext("2d"); $("out").classList.add("on");
+    c.width = img.naturalWidth; c.height = img.naturalHeight; g.drawImage(img, 0, 0);
+    const lw = Math.max(2, c.width / 300), fs = Math.max(14, c.width / 50), color = "#E6A93A";
+    g.font = `600 ${fs}px ${css("--sans")}`;
+    dets.forEach((d) => {
+      const [x1, y1, x2, y2] = d.box_xyxy; g.strokeStyle = color; g.lineWidth = lw; g.strokeRect(x1, y1, x2 - x1, y2 - y1);
+      const label = `${d.class_name} ${(d.confidence * 100).toFixed(0)}%`, tw = g.measureText(label).width;
+      g.fillStyle = color; g.fillRect(x1, Math.max(0, y1 - fs - 6), tw + 10, fs + 6); g.fillStyle = "#0F161E"; g.fillText(label, x1 + 5, Math.max(fs, y1 - 5));
+    });
+  }
+  async function post(path) {
+    const fd = new FormData(); fd.append("file", file);
+    const r = await fetch(base + path, { method: "POST", body: fd });
+    if (!r.ok) { let m = r.statusText; try { m = (await r.json()).detail || m; } catch (_) {} throw new Error(m); }
+    return r;
+  }
+  $("analyze").addEventListener("click", async () => {
+    msg("run-msg", "Analyzing…");
+    try {
+      const res = await (await post("/predict?mode=two_stage")).json(); drawOut(res.detections);
+      const rows = [["Gate decision", res.flagged ? "Flagged" : "Cleared"], ["P(abnormal)", res.abnormal_prob.toFixed(3)], ["Findings", res.detections.length], ["Time", res.timings.total_ms.toFixed(1) + " ms"]];
+      $("out-rows").innerHTML = rows.map(([k, v]) => `<tr><td>${k}</td><td class="v num">${v}</td></tr>`).join("");
+      msg("run-msg", "Analysis complete.", "ok");
+    } catch (e) { msg("run-msg", "Analysis failed: " + e.message, "err"); }
+  });
+  $("explain").addEventListener("click", async () => {
+    msg("run-msg", "Computing Grad-CAM…");
+    try { const b = await (await post("/explain")).blob(); $("out-cam").src = URL.createObjectURL(b); $("out-cam").hidden = false; $("out").classList.add("on"); msg("run-msg", "Grad-CAM ready.", "ok"); }
+    catch (e) { msg("run-msg", "Grad-CAM failed: " + e.message, "err"); }
+  });
+
+  /* ---------- init and theme changes ---------- */
+  function renderAll() { drawPipeline(); styleWbf(); updateGate(); updateWbf(); updateCal(); updateImpact(); }
+  renderAll();
+  window.addEventListener("resize", drawHist);
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", renderAll);
+  document.fonts && document.fonts.ready.then(renderAll);
+})();
+</script>
+</body>
+</html>

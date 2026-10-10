@@ -175,7 +175,9 @@ python -m src.benchmark   --config configs/kaggle.yaml --half            # PyTor
 python -m src.export_onnx --config configs/kaggle.yaml
 python -m src.benchmark   --config configs/kaggle.yaml --backend onnx    # ONNX
 ```
-After evaluating, copy `gate_threshold_from_val` and `temperature` from `runs/eval.json` into the `pipeline` section of the config. The notebook does this for you. **Run the benchmarks only after that**, so they use the right threshold.
+`benchmark.py` reads `gate_threshold_from_val` and `temperature` from `runs/eval.json` automatically, so run it after `evaluate.py`. To serve the API with the same values, pass them as `GATE_THRESHOLD` and `TEMPERATURE` (the notebook also writes them into the config).
+
+Finally, `python -m src.plots` draws the figures and `python -m src.report` writes the real numbers and figures into the README's Results section. Only outputs that exist are included, so the README never shows broken images.
 
 ### Step 9: Serve the API locally (optional)
 ```bash
@@ -327,6 +329,29 @@ Two implementation details are worth knowing:
 - YOLO is exported through Ultralytics, which can then load the `.onnx` file directly.
 - The pipeline chooses the backend from the file extension. `benchmark.py --backend onnx` lets you compare the two backends side by side.
 - Trade-off: you lose Grad-CAM, which needs gradients, and FP16 through this path. On a server you would usually serve ONNX or TensorRT and keep a PyTorch copy for explanations.
+
+### 5.13a Confidence intervals, subgroups and impact
+- **Bootstrap CIs** (`metrics.bootstrap_ci`): resample test studies with replacement 1,000 times, recompute the metric, take the 2.5th and 97.5th percentiles. Resamples with one class are skipped.
+- **Subgroups** (`src/subgroups.py`): `make_meta.py` reads `PatientSex` and `PatientAge` from DICOM headers; `evaluate.py` reports AUC, sensitivity and specificity by sex and age band (<40, 40–59, 60+). Groups under 30 studies or 10 abnormal studies are flagged as small.
+- **Impact** (`src/impact.py`): GPU time = mean latency × volume on one GPU; studies cleared by the gate = volume × prevalence × (1 − sensitivity). Assumptions live in the `impact` config section and are written into `impact.json`.
+- **Quick profile** (`configs/quick.yaml`): 30% stratified subset, fewer epochs, 640 px detector. Every output carries the profile name, so preliminary numbers are never mistaken for full results.
+- **τ and T flow automatically:** `benchmark.py` reads them from `runs/eval.json`, so there is no manual copy step.
+
+### 5.13b Error analysis and external validation
+- **`src/error_analysis.py`** reads `eval_preds.npz` (which now stores image ids) and `boxes.csv`. For each finding class it counts abnormal test studies containing that finding and how many the gate cleared. It also writes `gate_false_negatives.csv`, lowest score first, for manual review with Grad-CAM.
+- **`src/external_eval.py`** runs the gate on NIH ChestX-ray14 with the same weights, T and τ (no retuning). Frontal views only, stratified sample (`external.n_studies`). "Abnormal" = any NIH label; NIH labels are NLP-mined, so the caveats are written into the output and shown wherever the numbers appear.
+- Why it matters: error analysis tells you what to fix next; external validation tells you whether the result travels. Both are standard questions from US healthcare ML teams.
+
+### 5.14a `site/`: the GitHub Pages site
+A static page (HTML, CSS and JavaScript, no build step) deployed by `.github/workflows/deploy-pages.yml`. Its structure and rules are written down first in `docs/SITE_SPEC.md`, and `tests/test_site.py` checks the page against that spec.
+
+| Section | How it works |
+|---|---|
+| Playground | Three small models that run in the browser with simulated data: the gate threshold trade-off, WBF box fusion with live IoU, and temperature scaling. They explain the design; they are not model output. |
+| Results | Loads `results.json`, written by `python -m src.report` from a real run. Shows an empty state until then. |
+| Live demo | Calls an API address the visitor enters (default `http://localhost:8000`). The server allows the Pages origin through `CORS_ORIGINS`, and answers Chrome's private-network preflight so an HTTPS page can reach `localhost`. |
+
+Preview locally with `make site`. To publish, set **Settings → Pages → Source** to **GitHub Actions** once; every push that touches `site/` or `docs/figures/` redeploys.
 
 ### 5.14 `src/plots.py`: figures
 `train_classifier.py` now logs `history.csv` every epoch, and `evaluate.py` saves the raw test predictions to `eval_preds.npz`. `plots.py` turns those into four figures in `docs/figures/`:

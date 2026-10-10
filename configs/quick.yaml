@@ -1,0 +1,51 @@
+# Quick profile: a full end-to-end run on a free Kaggle GPU in about 1-2 hours.
+# Results are labeled 'quick' in eval.json, the README and the site.
+profile:
+  name: quick
+  note: 30% stratified subset, reduced epochs and 640 px detector. Preliminary numbers
+    for a first end-to-end run.
+data:
+  raw_csv: data/raw/train.csv
+  image_dir: data/raw/train_png
+  meta_csv: data/raw/train_meta.csv
+  out_dir: data/processed_quick
+  val_frac: 0.1
+  test_frac: 0.1
+  wbf_iou: 0.4
+  normal_bg_frac: 0.1
+  copy_images: false
+  subset_frac: 0.3
+  seed: 42
+classifier:
+  arch: resnet50
+  img_size: 512
+  epochs: 4
+  batch_size: 16
+  lr: 0.0003
+  num_workers: 4
+  out: runs/quick/classifier/best.pt
+detector:
+  weights: yolov8s.pt
+  img_size: 640
+  epochs: 15
+  batch: 8
+  project: runs/quick/detector
+  name: yolov8s
+  best: runs/quick/detector/yolov8s/weights/best.pt
+pipeline:
+  target_sensitivity: 0.95
+  gate_threshold: 0.3
+  temperature: 1.0
+  det_conf: 0.15
+  eval_conf: 0.01
+  map_iou: 0.4
+export:
+  dir: runs/quick/export
+impact:
+  studies_per_day: 1000
+  gpu_cost_per_hour: 1.0
+  prevalence: null
+external:
+  nih_csv: null
+  nih_images: null
+  n_studies: 2000

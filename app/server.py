@@ -7,12 +7,14 @@ Then open http://localhost:8000 (UI) or http://localhost:8000/docs (Swagger).
 CLS_CKPT may also point to an .onnx file (see src/export_onnx.py); Grad-CAM
 is then unavailable.
 """
+import inspect
 import io
 import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, File, HTTPException, Query, UploadFile
+from fastapi import FastAPI, File, HTTPException, Query, Request, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from PIL import Image
@@ -20,6 +22,9 @@ from PIL import Image
 from src.pipeline import TwoStagePipeline
 
 MAX_BYTES = 20 * 1024 * 1024
+# The GitHub Pages site and local pages may call this API from the browser.
+DEFAULT_ORIGINS = "https://danghoang2605-ds-ai.github.io,http://localhost:8000,http://127.0.0.1:8000"
+CORS_ORIGINS = [o.strip() for o in os.getenv("CORS_ORIGINS", DEFAULT_ORIGINS).split(",") if o.strip()]
 state = {}
 
 
@@ -38,6 +43,23 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Chest X-ray two-stage triage (research demo)", lifespan=lifespan)
+_cors = dict(allow_origins=CORS_ORIGINS, allow_methods=["GET", "POST"], allow_headers=["*"],
+             expose_headers=["X-Abnormal-Prob"])
+# Chrome asks before a public HTTPS page (GitHub Pages) calls a server on localhost.
+_native_pna = "allow_private_network" in inspect.signature(CORSMiddleware.__init__).parameters
+if _native_pna:
+    _cors["allow_private_network"] = True
+app.add_middleware(CORSMiddleware, **_cors)
+
+
+if not _native_pna:  # older Starlette: add the header ourselves
+
+    @app.middleware("http")
+    async def private_network_access(request: Request, call_next):
+        response = await call_next(request)
+        if request.headers.get("access-control-request-private-network") == "true":
+            response.headers["Access-Control-Allow-Private-Network"] = "true"
+        return response
 app.mount("/ui", StaticFiles(directory=Path(__file__).parent / "static", html=True), name="ui")
 
 

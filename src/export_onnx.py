@@ -5,6 +5,7 @@ python -m src.export_onnx --config configs/default.yaml
 -> runs/export/detector.onnx
 """
 import argparse
+import inspect
 import json
 import shutil
 from pathlib import Path
@@ -19,10 +20,12 @@ from src.models import load_classifier
 def export_classifier(ckpt: str, out: Path, opset: int = 17) -> Path:
     model, img_size = load_classifier(ckpt, "cpu")
     dummy = torch.randn(1, 3, img_size, img_size)
-    torch.onnx.export(
-        model, dummy, str(out), input_names=["input"], output_names=["logit"],
-        dynamic_axes={"input": {0: "batch"}, "logit": {0: "batch"}}, opset_version=opset,
-    )
+    kwargs = dict(input_names=["input"], output_names=["logit"],
+                  dynamic_axes={"input": {0: "batch"}, "logit": {0: "batch"}}, opset_version=opset)
+    # Newer PyTorch defaults to the dynamo exporter, which needs the extra onnxscript package.
+    if "dynamo" in inspect.signature(torch.onnx.export).parameters:
+        kwargs["dynamo"] = False
+    torch.onnx.export(model, dummy, str(out), **kwargs)
     Path(str(out) + ".json").write_text(json.dumps({"img_size": img_size}))
     return out
 

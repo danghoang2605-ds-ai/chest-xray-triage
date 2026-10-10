@@ -73,3 +73,18 @@ def test_explain_returns_png(client):
 def test_ui_served(client):
     r = client.get("/")
     assert r.status_code == 200 and "Chest X-ray" in r.text
+
+
+def test_cors_allows_github_pages(client):
+    origin = "https://danghoang2605-ds-ai.github.io"
+    r = client.options("/predict", headers={
+        "Origin": origin, "Access-Control-Request-Method": "POST",
+        "Access-Control-Request-Private-Network": "true"})
+    assert r.status_code == 200
+    assert r.headers["access-control-allow-origin"] == origin
+    assert r.headers["access-control-allow-private-network"] == "true"
+
+
+def test_cors_rejects_unknown_origin(client):
+    r = client.options("/predict", headers={"Origin": "https://evil.example", "Access-Control-Request-Method": "POST"})
+    assert "access-control-allow-origin" not in r.headers

@@ -16,6 +16,7 @@ import pandas as pd  # noqa: E402
 from sklearn.metrics import roc_auc_score, roc_curve  # noqa: E402
 
 from src.calibration import expected_calibration_error  # noqa: E402
+from src.config import load_config  # noqa: E402
 
 
 def plot_roc(y, p, threshold, out: Path):
@@ -88,6 +89,7 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--runs", default="runs")
     p.add_argument("--out", default="docs/figures")
+    p.add_argument("--config", default=None, help="locates history.csv next to the classifier checkpoint")
     args = p.parse_args()
     runs, out = Path(args.runs), Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
@@ -100,7 +102,10 @@ def main():
     report = json.loads((runs / "eval.json").read_text())
     plot_per_class_ap(report["detector"]["per_class_AP_detector_only"], out / "per_class_ap.png")
 
-    hist = runs / "classifier" / "history.csv"
+    hist = (Path(load_config(args.config)["classifier"]["out"]).parent / "history.csv" if args.config
+            else runs / "classifier" / "history.csv")
+    if not hist.exists():  # e.g. the quick profile keeps checkpoints under runs/quick/
+        hist = next(iter(sorted(runs.rglob("history.csv"))), hist)
     if hist.exists():
         plot_training(pd.read_csv(hist), out / "training.png")
     print(f"figures -> {out}")

@@ -7,6 +7,7 @@ The backend is picked from the classifier file extension.
 """
 import json
 import math
+import threading
 import time
 from pathlib import Path
 
@@ -16,6 +17,7 @@ from ultralytics import YOLO
 
 from src.data import CLASS_NAMES
 from src.dataset import build_transform
+from src.imaging import to_rgb
 from src.models import load_classifier
 
 
@@ -30,6 +32,9 @@ class TwoStagePipeline:
         self.det_imgsz = det_imgsz
         self.temperature = temperature
         self._cam = None
+        # Ultralytics models and the Grad-CAM hooks keep per-call state and are not
+        # thread-safe; the API serves requests from a threadpool, so calls are serialized.
+        self._lock = threading.Lock()
 
         if self.backend == "torch":
             self.cls, img_size = load_classifier(cls_ckpt, self.device)
@@ -85,17 +90,22 @@ class TwoStagePipeline:
         if self.backend != "torch":
             raise RuntimeError("Grad-CAM needs the PyTorch backend (.pt checkpoint).")
         from src.gradcam import GradCAM, overlay
-        if self._cam is None:
-            self._cam = GradCAM(self.cls)
-        img = img.convert("L").convert("RGB")
-        x = self.tf(img).unsqueeze(0).to(self.device)
-        if self.half:
-            x = x.half()
-        cam, logit = self._cam(x)
+        img = to_rgb(img)
+        with self._lock:
+            if self._cam is None:
+                self._cam = GradCAM(self.cls)
+            x = self.tf(img).unsqueeze(0).to(self.device)
+            if self.half:
+                x = x.half()
+            cam, logit = self._cam(x)
         return overlay(img, cam, alpha), self._prob(logit)
 
     def __call__(self, img: Image.Image, mode: str = "two_stage") -> dict:
-        img = img.convert("L").convert("RGB")
+        img = to_rgb(img)
+        with self._lock:
+            return self._run(img, mode)
+
+    def _run(self, img: Image.Image, mode: str) -> dict:
         timings, prob, flagged = {}, None, True
         t0 = time.perf_counter()
         if mode == "two_stage":

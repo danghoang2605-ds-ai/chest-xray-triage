@@ -5,19 +5,4 @@ runs/
 __pycache__/
 .pytest_cache/
 .ipynb_checkpoints/
-
-# Local datasets and generated outputs
-data/
-runs/
-*.pt
-*.pth
-*.onnx
-*.dcm
-*.zip
-.venv/
-__pycache__/
-.env
-.env.*
-!.env.example
-kaggle.json
-Chest_Xray_Triage_Study_Guide*
+_site/

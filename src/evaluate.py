@@ -19,8 +19,9 @@ from src.calibration import expected_calibration_error, fit_temperature, sigmoid
 from src.config import load_config
 from src.data import CLASS_NAMES
 from src.dataset import CXRDataset
-from src.metrics import mean_ap, sens_spec, threshold_for_sensitivity
+from src.metrics import bootstrap_ci, mean_ap, sens_spec, threshold_for_sensitivity
 from src.models import load_classifier, predict_probs
+from src.subgroups import age_band, subgroup_table
 
 
 def gt_boxes(boxes: pd.DataFrame, sizes: dict) -> dict:
@@ -83,16 +84,33 @@ def main():
     gated = [q for q in preds if prob_by_id[q["image_id"]] >= thr]
     map_two, _ = mean_ap(gated, gts, pc["map_iou"])
 
+    # 95% bootstrap confidence intervals on the test split
+    auc_ci = bootstrap_ci(y_te, p_te, roc_auc_score)
+    sens_ci = bootstrap_ci(y_te, p_te, lambda y, p: sens_spec(y, p >= thr)[0])
+    spec_ci = bootstrap_ci(y_te, p_te, lambda y, p: sens_spec(y, p >= thr)[1])
+
+    # performance by patient subgroup, when demographics are available
+    subgroups = {}
+    if "sex" in te.columns:
+        subgroups["sex"] = subgroup_table(y_te, p_te, thr, te["sex"].map({"M": "Male", "F": "Female"}))
+    if "age" in te.columns:
+        subgroups["age"] = subgroup_table(y_te, p_te, thr, [age_band(a) for a in te["age"]])
+
     report = {
+        "run_profile": cfg.get("profile", {"name": "full"}),
         "classifier": {
             "val_auc": float(roc_auc_score(y_va, p_va)),
             "test_auc": float(roc_auc_score(y_te, p_te)),
+            "test_auc_ci95": auc_ci,
+            "test_prevalence": float(np.mean(y_te)),
             "temperature": T,
             "test_ece_before_calibration": expected_calibration_error(p_te_raw, y_te),
             "test_ece_after_calibration": expected_calibration_error(p_te, y_te),
             "gate_threshold_from_val": thr,
             "test_sensitivity": sens,
             "test_specificity": spec,
+            "test_sensitivity_ci95": sens_ci,
+            "test_specificity_ci95": spec_ci,
             "test_frac_sent_to_detector": float(np.mean(p_te >= thr)),
         },
         "detector": {
@@ -100,12 +118,13 @@ def main():
             f"mAP@{pc['map_iou']}_two_stage": map_two,
             "per_class_AP_detector_only": {CLASS_NAMES[k]: round(v, 4) for k, v in ap_det.items()},
         },
+        "subgroups": subgroups,
         "n_test_images": int(len(te)),
     }
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     # raw arrays for src/plots.py
     np.savez(Path(args.out).with_name("eval_preds.npz"), y_test=y_te, p_test_raw=p_te_raw,
-             p_test=p_te, threshold=thr)
+             p_test=p_te, threshold=thr, image_ids=te["image_id"].to_numpy(dtype=str))
     Path(args.out).write_text(json.dumps(report, indent=2))
     print(json.dumps(report, indent=2))
 

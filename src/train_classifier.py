@@ -31,7 +31,7 @@ def main():
     dl_va = DataLoader(CXRDataset(va, c["img_size"], train=False), batch_size=c["batch_size"] * 2,
                        num_workers=c["num_workers"], pin_memory=amp)
 
-    model = build_classifier(c["arch"]).to(device)
+    model = build_classifier(c["arch"], pretrained=c.get("pretrained", True)).to(device)
     # ~70% of VinDr images are "No finding": reweight positives
     pos_rate = tr["abnormal"].mean()
     crit = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([(1 - pos_rate) / pos_rate], device=device))

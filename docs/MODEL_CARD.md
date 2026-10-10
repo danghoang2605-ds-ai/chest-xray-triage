@@ -20,20 +20,23 @@ It is **not** intended for diagnosis, screening, or any clinical decision. Its o
 - **Class balance:** about 70% of images are "No finding".
 
 ## Evaluation
-Fill these in from `runs/eval.json` and `runs/benchmark_*.json`.
+Fill these in from `runs/eval.json`, `runs/gate_misses.json`, `runs/external_nih.json`, `runs/benchmark_*.json` and `runs/impact.json`. The README Results section (`python -m src.report`) shows the same numbers automatically. State the run profile (quick or full) next to any number.
 
 | Metric | Value |
 |---|---|
-| Gate test AUC | |
-| Gate sensitivity / specificity at τ (target sensitivity 0.95, chosen on val) | |
+| Gate test AUC (95% CI) | |
+| Gate sensitivity / specificity at τ (target sensitivity 0.95, chosen on val), with 95% CIs | |
 | ECE before → after temperature scaling | |
+| Gate AUC, sensitivity, specificity by sex and age band (small groups flagged) | |
+| Findings most often cleared by the gate (miss rate by class) | |
+| External: NIH ChestX-ray14 AUC, sensitivity, specificity at the same τ (95% CI) | |
 | Detector mAP@0.4, detector only | |
 | Detector mAP@0.4, two-stage | |
 | Mean latency, detector only → two-stage (GPU, FP16) | |
 | Mean latency, PyTorch → ONNX | |
 
 ## Limitations
-- **Population shift.** All training data comes from Vietnamese hospitals. Performance on US patient populations, scanners, and acquisition protocols is unknown. The model would need external validation, for example on CheXpert or MIMIC-CXR, before any wider use.
+- **Population shift.** All training data comes from Vietnamese hospitals. The NIH ChestX-ray14 check measures transfer to one US source, but its labels are NLP-mined and defined differently, so it is a transfer check, not a clinical validation. Prospective validation on the target population would be required before any use.
 - **Label noise.** Radiologists often disagree. Image-level labels use an "any radiologist" rule, which favors recall at the cost of noise.
 - **Small findings.** Localization of small lesions such as nodules is typically weak.
 - **Gate failure.** A false negative at the gate means the detector never runs, so that finding is lost entirely.
@@ -41,7 +44,7 @@ Fill these in from `runs/eval.json` and `runs/benchmark_*.json`.
 
 ## Ethical considerations
 - **Automation bias.** Clinicians may over-trust model outputs. Any real deployment would need radiologist review of every case (human in the loop).
-- **Subgroup performance.** Performance across age, sex, and device subgroups has not been measured, and dataset metadata limits this analysis.
+- **Subgroup performance.** Performance by sex and age band is reported from DICOM header fields, which are sometimes missing; device and site subgroups are not available in the metadata.
 - **Grad-CAM.** Heatmaps show where the classifier attended. They are not proof of correct reasoning and must not be read as a localization of disease.
 
 ## Responsible use

@@ -45,8 +45,21 @@ def test_prepare(fake_vindr):
     assert b.class_id == 3
     assert b.xc == pytest.approx(21 / 64) and b.w == pytest.approx(20 / 64)
 
-    spec = yaml.safe_load(open(out / "yolo" / "dataset.yaml"))
+    spec = yaml.safe_load((out / "yolo" / "dataset.yaml").read_text())
     assert len(spec["names"]) == len(CLASS_NAMES) == 14
     label_files = list((out / "yolo" / "labels").rglob("*.txt"))
     assert len(label_files) == 20  # bg frac 1.0 -> all normals included as background
     assert sum(1 for f in label_files if f.read_text().strip()) == 10
+
+
+def test_subset_and_demographics(fake_vindr, tmp_path):
+    cfg, out = fake_vindr
+    meta = tmp_path / "meta.csv"
+    rows = ["image_id,dim0,dim1,sex,age"] + [f"img{i:02d},64,64,{'M' if i % 2 else 'F'},{30 + i}" for i in range(20)]
+    meta.write_text("\n".join(rows))
+    cfg["data"]["meta_csv"] = str(meta)
+    cfg["data"]["subset_frac"] = 0.5
+    cfg["data"]["val_frac"] = cfg["data"]["test_frac"] = 0.2
+    labels, _ = prepare(cfg)
+    assert len(labels) == 10 and labels["abnormal"].sum() == 5   # stratified half
+    assert {"sex", "age"} <= set(labels.columns) and labels["sex"].notna().all()

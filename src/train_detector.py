@@ -24,6 +24,8 @@ def main():
         fliplr=0.0,  # same reason as the classifier: no left-right flips on CXR
         seed=cfg["data"]["seed"],
         exist_ok=True,
+        workers=d.get("workers", 8),
+        plots=d.get("plots", True),
     )
     print(f"weights -> {Path(d['project']) / d['name'] / 'weights' / 'best.pt'}")
 

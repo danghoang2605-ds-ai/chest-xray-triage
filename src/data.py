@@ -71,6 +71,23 @@ def fuse_boxes(ann: pd.DataFrame, width: int, height: int, iou_thr: float = 0.4)
     return out
 
 
+def take_subset(labels: pd.DataFrame, frac: float, seed: int) -> pd.DataFrame:
+    """Stratified subset for quick runs (frac = 1.0 keeps everything)."""
+    if frac >= 1.0:
+        return labels
+    keep, _ = train_test_split(labels, train_size=frac, stratify=labels["abnormal"], random_state=seed)
+    return keep.sort_values("image_id").reset_index(drop=True)
+
+
+def add_demographics(labels: pd.DataFrame, meta_csv) -> pd.DataFrame:
+    """Attach sex and age from the meta CSV when present, for subgroup analysis."""
+    if not meta_csv or not Path(meta_csv).exists():
+        return labels
+    meta = pd.read_csv(meta_csv)
+    cols = [c for c in ("sex", "age") if c in meta.columns]
+    return labels.merge(meta[["image_id", *cols]], on="image_id", how="left") if cols else labels
+
+
 def split_ids(labels: pd.DataFrame, val_frac: float, test_frac: float, seed: int) -> np.ndarray:
     """Stratified train/val/test split at image level."""
     train, rest = train_test_split(
@@ -144,6 +161,9 @@ def prepare(cfg: dict):
     # (Alternative: majority vote. Trade-off: recall vs. label noise.)
     labels = pd.DataFrame({"image_id": sorted(df["image_id"].unique())})
     labels["abnormal"] = labels["image_id"].isin(set(abn["image_id"])).astype(int)
+    labels = take_subset(labels, d.get("subset_frac", 1.0), d["seed"])
+    df, abn = df[df["image_id"].isin(labels["image_id"])], abn[abn["image_id"].isin(labels["image_id"])]
+    labels = add_demographics(labels, d.get("meta_csv"))
     labels["path"] = [str(Path(d["image_dir"]) / f"{i}.png") for i in labels["image_id"]]
     labels["split"] = split_ids(labels, d["val_frac"], d["test_frac"], d["seed"])
     labels.to_csv(out / "labels.csv", index=False)
