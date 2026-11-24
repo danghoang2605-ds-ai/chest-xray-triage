@@ -227,13 +227,33 @@ footer { border-top: 1.5px solid var(--form); margin: 56px 0 0; padding: 18px 0 
 @media (max-width: 760px) {
   main { padding: 16px 16px 0; }
   body { font-size: 16.5px; }
-  .req-top { grid-template-columns: 1fr; gap: 10px; padding: 16px; }
-  .req-top img { width: 44px; height: 44px; }
-  .req-fields { grid-template-columns: 1fr; }
-  .req-fields > div { border-right: 0; border-bottom: 1px solid var(--rule-strong); padding: 10px 16px; }
+  .req-top { grid-template-columns: 1fr; gap: 10px; padding: 14px; }
+  .req-fields > div { border-right: 0; border-bottom: 1px solid var(--rule-strong); }
   .req-fields > div:last-child { border-bottom: 0; }
-  .tickets { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-  .strip { padding: 14px 12px; }
+  /* compact tickets: colour carries the state, the label is in each ticket's aria-label */
+  .tickets { grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; }
+  .ticket { padding: 4px 4px 3px; }
+  .ticket .row span:first-child, .ticket .st { display: none; }
+  .ticket .row { justify-content: center; }
+  .ticket .bar { margin: 4px 0 2px; }
+  .ticket.sent { background: var(--form-soft); }
+  .strip { padding: 12px 10px; margin-top: 12px; display: flex; flex-direction: column; }
+  .strip > .strip-ctl { order: 1; margin: 0 0 10px; }
+  .strip > .tickets { order: 2; }
+  .strip > .tally { order: 3; }
+  .strip > .legend { order: 4; }
+  .strip-head h2 { font-size: 1.2rem; }
+  .strip-head p { font-size: 14px; }
+  .tally div { flex: 1 1 0; padding: 6px 8px; }
+  .tally dd { font-size: 1.05rem; }
+  .tally dd small { display: block; font-size: 12px; }
+  .req-top img { display: none; }
+  .req .sub { font-size: 15px; }
+  .req-fields { grid-template-columns: 1fr 1fr; }
+  .req-fields > div { padding: 8px 12px; font-size: 14.5px; }
+  .req-fields > div:nth-child(1) { border-right: 1px solid var(--rule-strong); }
+  .req-fields > div:last-child { grid-column: 1 / -1; }
+  .notice { font-size: 14.5px; padding: 10px 12px; }
   .strip-ctl { grid-template-columns: 1fr; }
   dl.fields { grid-template-columns: 1fr; }
   dl.fields > div:nth-child(odd), dl.fields > div:nth-child(even) { padding: 12px 0; border-right: 0; }
