@@ -100,3 +100,18 @@ def test_starts_without_weights_and_answers_503(monkeypatch):
         assert c.get("/health").json()["model_loaded"] is False
         assert c.post("/predict", files=_png()).status_code == 503
         assert c.post("/explain", files=_png()).status_code == 503
+
+
+def test_unloadable_weights_answer_503(monkeypatch):
+    class Broken:
+        def __init__(self, *a, **k):
+            raise FileNotFoundError("/models/classifier.pt")
+
+    monkeypatch.setitem(sys.modules, "src.pipeline", types.SimpleNamespace(TwoStagePipeline=Broken))
+    monkeypatch.setenv("CLS_CKPT", "/models/classifier.pt")
+    monkeypatch.setenv("DET_WEIGHTS", "/models/detector.pt")
+    sys.modules.pop("app.server", None)
+    from app.server import app
+    with TestClient(app) as c:
+        assert c.get("/health").json()["model_loaded"] is False
+        assert c.post("/predict", files=_png()).status_code == 503

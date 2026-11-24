@@ -39,14 +39,17 @@ async def lifespan(app: FastAPI):
         yield
         state.clear()
         return
-    state["pipe"] = TwoStagePipeline(
-        cls_ckpt, det_weights,
-        gate_threshold=float(os.getenv("GATE_THRESHOLD", "0.3")),
-        det_conf=float(os.getenv("DET_CONF", "0.15")),
-        det_imgsz=int(os.getenv("DET_IMGSZ", "1024")),
-        temperature=float(os.getenv("TEMPERATURE", "1.0")),
-        half=os.getenv("HALF", "0") == "1",
-    )
+    try:
+        state["pipe"] = TwoStagePipeline(
+            cls_ckpt, det_weights,
+            gate_threshold=float(os.getenv("GATE_THRESHOLD", "0.3")),
+            det_conf=float(os.getenv("DET_CONF", "0.15")),
+            det_imgsz=int(os.getenv("DET_IMGSZ", "1024")),
+            temperature=float(os.getenv("TEMPERATURE", "1.0")),
+            half=os.getenv("HALF", "0") == "1",
+        )
+    except Exception as exc:  # missing or unreadable weights (e.g. Docker without the /models mount)
+        log.error("Could not load the model (%s); serving without it", exc)
     yield
     state.clear()
 

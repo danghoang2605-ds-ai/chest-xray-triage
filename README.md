@@ -178,16 +178,16 @@ Open http://localhost:8000 for the built-in UI, http://localhost:8000/docs for S
 | `POST /predict?mode=two_stage\|detector_only` | Gate score, decision, boxes and timings for one image |
 | `POST /explain` | Grad-CAM overlay as PNG; probability in the `X-Abnormal-Prob` header |
 | `GET /health` | Model loaded, backend, current τ |
-
-Without `CLS_CKPT` / `DET_WEIGHTS` the server still starts (UI and `/health` work) and `/predict` and `/explain` answer `503` instead of crashing at startup.
-
-**Docker:** `docker build -t cxr-triage . && docker run -p 8000:8000 -v $PWD/weights:/models:ro cxr-triage` (CPU-only torch by default, non-root user, built-in health check).
 | `GET /` | Built-in web UI |
+
+If `CLS_CKPT` / `DET_WEIGHTS` are unset or the files cannot be loaded, the server still starts (UI and `/health` work, `model_loaded` is false) and `/predict` and `/explain` answer `503` instead of crashing.
+
+**Docker:** `docker build -t cxr-triage . && docker run -p 8000:8000 -v $PWD/weights:/models:ro cxr-triage` (CPU-only torch by default, non-root user, built-in health check). Without the mount the container still starts and reports `model_loaded: false`.
 
 ## Testing
 
 ```bash
-python -m pytest -q          # 53 unit and contract tests, no GPU or weights needed
+python -m pytest -q          # 54 unit and contract tests, no GPU or weights needed
 ruff check .
 python scripts/smoke_test.py # end-to-end on synthetic data: every stage, tiny models, a few minutes on CPU
 ```

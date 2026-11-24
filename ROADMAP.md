@@ -3,7 +3,7 @@
 The code, tests and site are in place. What is missing is a published run, so the plan starts there.
 
 ## Done (this pass)
-- [x] API starts without weights: `/health` and the UI work, `/predict` and `/explain` return `503` (was a `KeyError` at startup)
+- [x] API starts without weights or with unloadable ones (e.g. Docker without the `/models` mount): `/health` and the UI work, `/predict` and `/explain` return `503`
 - [x] Docker: CPU-only torch by default (much smaller image), non-root user, `HEALTHCHECK`, `.dockerignore`
 - [x] CI: Python 3.10 and 3.12 matrix, pip cache, cancels superseded runs; Dependabot for actions and pip
 - [x] Fixed stale README items (test count, "planned: subgroup analysis" already exists in `src/subgroups.py`)
