@@ -9,12 +9,14 @@ Written before the code. Every change to the site is checked against this file.
 
 ## Audience and tone
 - Engineers and hiring teams in the US. English only.
-- Written like a research project page: numbered sections, short bullets, figures with numbered captions, references.
+- Written like a research project page: numbered sections, figures with numbered captions, references. Facts sit in labelled fields and tables rather than long bullet lists.
+- Visual direction: a lab requisition. White form stock ruled in requisition blue; specimen-tube cap colours code sections and figures. Each interactive figure opens with a one-line "Read it like this" guide and one-click presets.
 - Plain, specific language. No marketing slogans.
 
 ## Structure (in order)
 1. Title block: name, one-line description, author, links (code, model card, guide, notebook), status line.
 2. Safety notice.
+2b. Triage strip: 40 simulated studies routed by a τ slider shared with Fig. 2, with counts of cleared, sent and missed studies, labeled "Simulated data".
 3. Summary: 4–5 bullets.
 4. Problem.
 5. Method: Fig. 1 pipeline diagram with real specs (input sizes, outputs), then one bullet list per stage.

@@ -25,7 +25,8 @@ def test_figures_are_numbered_and_captioned():
 
 
 def test_interactive_figures_are_labelled():
-    assert HTML.count('<span class="tag">Simulated data</span>') == 3
+    # Figs. 2-4 plus the 40-study triage strip in the first viewport
+    assert HTML.count('<span class="tag">Simulated data</span>') == 4
     assert HTML.count('<span class="tag">Illustrative inputs</span>') == 1
 
 
