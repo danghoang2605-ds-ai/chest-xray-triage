@@ -333,7 +333,7 @@ Two implementation details are worth knowing:
 ### 5.13a Confidence intervals, subgroups and impact
 - **Bootstrap CIs** (`metrics.bootstrap_ci`): resample test studies with replacement 1,000 times, recompute the metric, take the 2.5th and 97.5th percentiles. Resamples with one class are skipped.
 - **Subgroups** (`src/subgroups.py`): `make_meta.py` reads `PatientSex` and `PatientAge` from DICOM headers; `evaluate.py` reports AUC, sensitivity and specificity by sex and age band (<40, 40–59, 60+). Groups under 30 studies or 10 abnormal studies are flagged as small.
-- **Impact** (`src/impact.py`): GPU time = mean latency × volume on one GPU; studies cleared by the gate = volume × prevalence × (1 − sensitivity). Assumptions live in the `impact` config section and are written into `impact.json`.
+- **Impact** (`src/impact.py`): GPU time = mean latency × volume on one GPU; abnormal studies missed by the gate = volume × prevalence × (1 − sensitivity). Assumptions live in the `impact` config section and are written into `impact.json`.
 - **Quick profile** (`configs/quick.yaml`): 30% stratified subset, fewer epochs, 640 px detector. Every output carries the profile name, so preliminary numbers are never mistaken for full results.
 - **τ and T flow automatically:** `benchmark.py` reads them from `runs/eval.json`, so there is no manual copy step.
 

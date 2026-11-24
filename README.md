@@ -57,7 +57,7 @@ Most chest X-rays are normal: in VinDr-CXR about 70% have no finding. A high-res
 - **Measured trade-off.** mAP@0.4 (the VinBigData competition metric) is reported for detector-only and two-stage, so the cost of gating is a number.
 - **Statistical rigor.** AUC, sensitivity and specificity come with 95% bootstrap confidence intervals.
 - **Subgroup check.** Gate performance by patient sex and age band (from DICOM headers), with small groups flagged instead of over-interpreted.
-- **Operational impact.** Measured latency and sensitivity are turned into compute time, cost and studies cleared by the gate for a stated volume (`src/impact.py`), with every assumption printed.
+- **Operational impact.** Measured latency and sensitivity are turned into compute time, cost and abnormal studies missed by the gate for a stated volume (`src/impact.py`), with every assumption printed.
 - **Error analysis.** Abnormal studies the gate clears are broken down by finding class, so the next iteration targets the right findings.
 - **External validation (US data).** The gate is re-run unchanged on NIH ChestX-ray14 from the NIH Clinical Center, with confidence intervals and subgroups, and its caveats stated.
 - **Explainability.** Grad-CAM heatmaps show which regions raised the gate score.
@@ -143,7 +143,7 @@ python -m src.external_eval    --config configs/default.yaml                 # o
 python -m src.benchmark        --config configs/default.yaml --half          # PyTorch latency (τ and T read from eval.json)
 python -m src.export_onnx      --config configs/default.yaml
 python -m src.benchmark        --config configs/default.yaml --backend onnx  # ONNX latency
-python -m src.impact           --config configs/default.yaml                 # compute time, cost, studies cleared
+python -m src.impact           --config configs/default.yaml                 # compute time, cost, abnormal studies missed
 python -m src.plots            --config configs/default.yaml                 # docs/figures/*.png
 python -m src.report                                                         # README + site results
 ```
@@ -210,7 +210,7 @@ None of the unit tests need a GPU or weights: the API tests use a stub model. Th
 │   ├── calibration.py   # temperature scaling, ECE
 │   ├── evaluate.py      # full evaluation -> runs/eval.json
 │   ├── subgroups.py     # performance by sex and age band
-│   ├── impact.py        # compute time, cost, studies cleared by the gate
+│   ├── impact.py        # compute time, cost, abnormal studies missed by the gate
 │   ├── error_analysis.py # gate misses by finding class
 │   ├── external_eval.py # NIH ChestX-ray14 external validation
 │   ├── imaging.py       # safe image loading (16-bit PNGs)

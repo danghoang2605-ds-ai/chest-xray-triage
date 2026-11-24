@@ -54,10 +54,10 @@ a:hover { text-decoration-thickness: 2px; }
 :focus-visible { outline: 3px solid var(--form); outline-offset: 2px; border-radius: 3px; }
 code, pre, .mono { font-family: var(--mono); }
 code { font-size: .86em; background: var(--field); padding: 1px 5px; border-radius: 3px; border: 1px solid var(--rule); }
-pre { background: var(--field); padding: 14px 16px; border-radius: 4px; overflow-x: auto; font-size: 14px; line-height: 1.6; border: 1px solid var(--rule); border-top: 3px solid var(--form); }
+pre { background: var(--field); padding: 14px 16px; border-radius: 3px; overflow-x: auto; font-size: 14px; line-height: 1.6; border: 1px solid var(--rule-strong); }
 pre code { background: none; padding: 0; font-size: inherit; border: 0; }
 .num { font-variant-numeric: tabular-nums; }
-.cap { display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: var(--c, var(--cap-grey)); box-shadow: inset 0 -2px 0 rgba(0,0,0,.18); flex: none; }
+.cap { display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: var(--c, var(--cap-grey)); flex: none; }
 
 /* frame: contents rail + document */
 .layout { display: grid; grid-template-columns: 232px minmax(0, 1fr); max-width: 1320px; margin: 0 auto; }
@@ -73,7 +73,22 @@ pre code { background: none; padding: 0; font-size: inherit; border: 0; }
 .toc a[aria-current="true"] { color: var(--ink); background: var(--form-soft); font-weight: 700; }
 .toc .foot { margin-top: auto; font-size: 13px; color: var(--muted); }
 main { min-width: 0; padding: 32px 48px 0; }
-.col { max-width: 760px; }
+.col { max-width: none; }
+dl.fields dd, dl.fields.one dd { max-width: 68ch; }
+dl.fields > div.wide { grid-column: 1 / -1; border-right: 0 !important; }
+.toc .code { margin: 22px 0 0; display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+.toc .code div { display: flex; align-items: center; gap: 8px; }
+.toc .code dt, .toc .code dd { margin: 0; }
+.toc .code .cap { width: 9px; height: 9px; }
+h2 > .cap { width: 16px; height: 16px; }
+html { scrollbar-color: var(--rule-strong) var(--paper); }
+input[type=range] { -webkit-appearance: none; appearance: none; height: 22px; background: transparent; }
+input[type=range]::-webkit-slider-runnable-track { height: 4px; background: var(--rule-strong); border-radius: 2px; }
+input[type=range]::-moz-range-track { height: 4px; background: var(--rule-strong); border-radius: 2px; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; margin-top: -7px; border-radius: 3px; background: var(--paper); border: 2px solid var(--form); }
+input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 3px; background: var(--paper); border: 2px solid var(--form); }
+input[type=file] { font: 15px var(--sans); color: var(--muted); }
+input[type=file]::file-selector-button { font: 700 14.5px/1.2 var(--sans); padding: 8px 13px; margin-right: 12px; border-radius: 3px; border: 1.5px solid var(--form); background: transparent; color: var(--form); cursor: pointer; }
 
 /* requisition header */
 .req { border: 1.5px solid var(--form); border-radius: 4px; }
@@ -105,10 +120,22 @@ main { min-width: 0; padding: 32px 48px 0; }
 .ticket .cap { width: 9px; height: 9px; }
 .ticket .bar { height: 4px; background: var(--rule); margin: 6px 0 5px; position: relative; border-radius: 2px; }
 .ticket .bar i { position: absolute; top: -3px; width: 2px; height: 10px; background: var(--ink); }
-.ticket .st { font: 700 11px/1 var(--label); font-stretch: 85%; color: var(--form); }
+.ticket .st { font: 700 11px/1 var(--label); font-stretch: 85%; color: var(--form); display: inline-flex; align-items: center; gap: 4px; }
+.ticket .bar b { position: absolute; top: -4px; bottom: -4px; width: 0; border-left: 1.5px dashed var(--form); }
+.ticket .box { width: 11px; height: 11px; border: 1.5px solid var(--form); border-radius: 2px; display: inline-grid; place-items: center; }
+.ticket .box svg { width: 9px; height: 9px; opacity: 0; }
+.ticket.sent .box svg { opacity: 1; }
+.ticket .stamp {
+  position: absolute; right: 4px; bottom: 4px; padding: 1px 4px; border: 1.5px solid currentColor; border-radius: 2px;
+  font: 800 10px/1.2 var(--label); font-stretch: 80%; letter-spacing: .04em; color: var(--muted);
+  transform: rotate(-8deg) scale(.4); opacity: 0; transition: transform .28s cubic-bezier(.2, 1.4, .4, 1), opacity .18s;
+  pointer-events: none;
+}
+.ticket.cleared .stamp, .ticket.missed .stamp { opacity: 1; transform: rotate(-8deg) scale(1); }
+.ticket.missed .stamp { color: var(--cap-red); }
 .ticket.cleared { background: var(--field); border-color: var(--rule); }
 .ticket.cleared .bar i { background: var(--muted); }
-.ticket.cleared .st { color: var(--muted); }
+.ticket.cleared .st, .ticket.missed .st { visibility: hidden; }
 .ticket.sent { border-color: var(--form); }
 .ticket.missed { border: 1.5px solid var(--cap-red); opacity: 1; background: color-mix(in srgb, var(--cap-red) 7%, var(--paper)); }
 .ticket.missed .st { color: var(--finding-text); }
@@ -201,7 +228,7 @@ ul.b { margin: 0 0 16px; padding-left: 22px; max-width: 70ch; }
 /* live demo */
 ol.steps { padding-left: 0; list-style: none; counter-reset: s; max-width: 760px; }
 ol.steps > li { counter-increment: s; position: relative; padding: 0 0 18px 44px; }
-ol.steps > li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 28px; height: 28px; border: 1.5px solid var(--form); border-radius: 3px; color: var(--form); font: 700 14px/25px var(--mono); text-align: center; }
+ol.steps > li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--form); color: var(--paper); font: 700 14px/28px var(--mono); text-align: center; }
 .field { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
 .field input[type=url] { flex: 1 1 240px; font: 15px var(--mono); padding: 8px 10px; border: 1px solid var(--rule-strong); border-radius: 3px; background: var(--paper); color: var(--ink); }
 .msg { font-size: 14.5px; min-height: 1.4em; margin-top: 6px; }
@@ -217,7 +244,7 @@ footer { border-top: 1.5px solid var(--form); margin: 56px 0 0; padding: 18px 0 
 @media (max-width: 1100px) {
   .layout { grid-template-columns: minmax(0, 1fr); }
   .toc { position: sticky; top: 0; z-index: 5; height: auto; flex-direction: row; align-items: center; gap: 12px; padding: 8px 16px; border-right: 0; border-bottom: 1px solid var(--rule); background: var(--paper); overflow-x: auto; white-space: nowrap; }
-  .toc .brand, .toc p, .toc .foot { display: none; }
+  .toc .brand, .toc p, .toc .foot, .toc .code { display: none; }
   .toc ol { display: flex; gap: 4px; }
   .toc a { margin: 0; }
   .toc a .k { display: none; }
@@ -233,7 +260,9 @@ footer { border-top: 1.5px solid var(--form); margin: 56px 0 0; padding: 18px 0 
   /* compact tickets: colour carries the state, the label is in each ticket's aria-label */
   .tickets { grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; }
   .ticket { padding: 4px 4px 3px; }
-  .ticket .row span:first-child, .ticket .st { display: none; }
+  .ticket .row span:first-child { display: none; }
+  .ticket .st { font-size: 0; gap: 0; }
+  .ticket .stamp { font-size: 8px; right: 2px; bottom: 2px; padding: 0 2px; }
   .ticket .row { justify-content: center; }
   .ticket .bar { margin: 4px 0 2px; }
   .ticket.sent { background: var(--form-soft); }
@@ -242,12 +271,21 @@ footer { border-top: 1.5px solid var(--form); margin: 56px 0 0; padding: 18px 0 
   .strip > .tickets { order: 2; }
   .strip > .tally { order: 3; }
   .strip > .legend { order: 4; }
-  .strip-head h2 { font-size: 1.2rem; }
-  .strip-head p { font-size: 14px; }
+  .strip-head h2 { font-size: 1.2rem; display: block; }
+  .strip-head h2 .tag { font-size: 11px; }
+  .strip-head p { display: none; }
   .tally div { flex: 1 1 0; padding: 6px 8px; }
   .tally dd { font-size: 1.05rem; }
   .tally dd small { display: block; font-size: 12px; }
-  .req-top img { display: none; }
+  .req-top { grid-template-columns: auto minmax(0, 1fr); align-items: center; }
+  .req-top img { display: block; width: 40px; height: 40px; }
+  table.stack-sm, table.stack-sm tbody, table.stack-sm tr, table.stack-sm td { display: block; }
+  table.stack-sm thead { display: none; }
+  table.stack-sm tr { padding: 10px 12px; border-bottom: 1px solid var(--rule); }
+  table.stack-sm td { padding: 2px 0; border: 0; }
+  table.stack-sm td::before { content: attr(data-label); display: block; font: 700 12.5px/1.3 var(--label); font-stretch: 88%; color: var(--form); }
+  table.stack-sm td:first-child::before { display: none; }
+  table.stack-sm td:first-child { font-weight: 700; }
   .req .sub { font-size: 15px; }
   .req-fields { grid-template-columns: 1fr 1fr; }
   .req-fields > div { padding: 8px 12px; font-size: 14.5px; }
@@ -273,15 +311,22 @@ footer { border-top: 1.5px solid var(--form); margin: 56px 0 0; padding: 18px 0 
       <li><a href="#summary"><span class="k"></span><span class="cap" style="--c:var(--cap-grey)"></span>Summary</a></li>
       <li><a href="#problem"><span class="k">1</span><span class="cap" style="--c:var(--cap-red)"></span>Problem</a></li>
       <li><a href="#method"><span class="k">2</span><span class="cap" style="--c:var(--cap-lav)"></span>Method</a></li>
-      <li><a href="#decisions"><span class="k">3</span><span class="cap" style="--c:var(--cap-gold)"></span>Design decisions</a></li>
+      <li><a href="#decisions"><span class="k">3</span><span class="cap" style="--c:var(--cap-grey)"></span>Design decisions</a></li>
       <li><a href="#figures"><span class="k">4</span><span class="cap" style="--c:var(--cap-blue)"></span>Interactive figures</a></li>
       <li><a href="#protocol"><span class="k">5</span><span class="cap" style="--c:var(--cap-green)"></span>Evaluation protocol</a></li>
-      <li><a href="#results"><span class="k">6</span><span class="cap" style="--c:var(--cap-gold)"></span>Results</a></li>
-      <li><a href="#demo"><span class="k">7</span><span class="cap" style="--c:var(--cap-blue)"></span>Live demo</a></li>
-      <li><a href="#reproduce"><span class="k">8</span><span class="cap" style="--c:var(--cap-green)"></span>Reproduce</a></li>
+      <li><a href="#results"><span class="k">6</span><span class="cap" style="--c:var(--cap-green)"></span>Results</a></li>
+      <li><a href="#demo"><span class="k">7</span><span class="cap" style="--c:var(--cap-gold)"></span>Live demo</a></li>
+      <li><a href="#reproduce"><span class="k">8</span><span class="cap" style="--c:var(--cap-grey)"></span>Reproduce</a></li>
       <li><a href="#limitations"><span class="k">9</span><span class="cap" style="--c:var(--cap-red)"></span>Limitations</a></li>
       <li><a href="#references"><span class="k"></span><span class="cap" style="--c:var(--cap-grey)"></span>References</a></li>
     </ol>
+    <dl class="code" aria-label="Cap colour code">
+      <div><dt><span class="cap" style="--c:var(--cap-lav)"></span></dt><dd>Gate</dd></div>
+      <div><dt><span class="cap" style="--c:var(--cap-blue)"></span></dt><dd>Calibration</dd></div>
+      <div><dt><span class="cap" style="--c:var(--cap-gold)"></span></dt><dd>Detector</dd></div>
+      <div><dt><span class="cap" style="--c:var(--cap-green)"></span></dt><dd>Evaluation</dd></div>
+      <div><dt><span class="cap" style="--c:var(--cap-red)"></span></dt><dd>Risk</dd></div>
+    </dl>
     <div class="foot">Dang Hoang · University of Georgia</div>
   </nav>
 
@@ -312,14 +357,14 @@ footer { border-top: 1.5px solid var(--form); margin: 56px 0 0; padding: 18px 0 
 
     <div class="strip" aria-labelledby="strip-title">
       <div class="strip-head">
-        <h2 id="strip-title">40 studies through the gate</h2>
+        <h2 id="strip-title">40 studies through the gate <span class="tag">Simulated data</span></h2>
         <p>Drag τ right: more studies are cleared without the detector, and past a point abnormal ones (red) are missed.</p>
       </div>
       <div class="tickets" id="tickets" role="list" aria-label="Simulated studies and their gate decision"></div>
       <div class="legend" aria-hidden="true">
         <span><i class="cap" style="--c:var(--cap-red)"></i>Abnormal (ground truth)</span>
         <span><i class="cap" style="--c:var(--cap-grey)"></i>Normal</span>
-        <span>Tick on each ticket: gate score from 0 to 1</span>
+        <span>Black tick: the study's gate score. Dashed line: τ. Ticked box: sent to the detector.</span>
       </div>
       <div class="strip-ctl">
         <label for="tau-strip">Threshold τ <strong class="num mono" id="tau-strip-v">0.30</strong>
@@ -331,33 +376,30 @@ footer { border-top: 1.5px solid var(--form); margin: 56px 0 0; padding: 18px 0 
         <div><dt>Sent to the detector</dt><dd class="num" id="s-sent"></dd></div>
         <div><dt>Abnormal studies missed</dt><dd class="num" id="s-missed"></dd></div>
       </dl>
-      <p class="legend" style="margin-bottom:0">Scores are drawn from the simulation behind Fig. 2; τ here and in Fig. 2 move together. <span class="tag">Simulated data</span></p>
+      <p class="legend" style="margin-bottom:0">Scores are drawn from the simulation behind Fig. 2; τ here and in Fig. 2 move together.</p>
     </div>
 
     <div class="col">
     <section id="summary">
-      <h2>Summary</h2>
+      <h2><span class="cap" style="--c:var(--cap-grey)" aria-hidden="true"></span>Summary</h2>
       <dl class="fields">
         <div><dt>Task</dt><dd>Flag abnormal chest X-rays and localize 14 finding types on the public VinDr&#8209;CXR dataset [1].</dd></div>
-        <div><dt>Idea</dt><dd>About 70% of studies show no finding, so a cheap classifier screens every study and the expensive detector runs only on the ones it flags.</dd></div>
+        <div><dt>Idea</dt><dd>A cheap classifier screens every study; the expensive detector runs only on the studies it flags.</dd></div>
         <div><dt>Safety rule</dt><dd>τ is the highest threshold that keeps sensitivity at 95% on validation, then reported once on an untouched test split.</dd></div>
-        <div><dt>Reported</dt><dd>AUC, sensitivity, specificity with 95% bootstrap CIs; calibration error; mAP@0.4 with and without the gate; latency for PyTorch and ONNX.</dd></div>
-        <div><dt>Fairness check</dt><dd>Gate performance by sex and age band, with small groups flagged instead of over-read.</dd></div>
-        <div><dt>External validation</dt><dd>The gate is re-tested unchanged on NIH ChestX-ray14 from a US hospital.</dd></div>
-        <div><dt>Operational impact</dt><dd>Measured latency and sensitivity turned into GPU hours, cost and studies cleared for a stated volume.</dd></div>
-        <div><dt>Engineering</dt><dd>FastAPI with Grad-CAM, ONNX export, 53 tests without a GPU, an end-to-end smoke test, CI, Docker and a model card.</dd></div>
+        <div><dt>Evaluation</dt><dd>Bootstrap CIs, calibration error, mAP@0.4 with and without the gate, latency, subgroups, an external test on NIH ChestX-ray14 and the operational cost of every miss.</dd></div>
+        <div class="wide"><dt>Engineering</dt><dd>FastAPI with Grad-CAM, ONNX export, 54 tests without a GPU, an end-to-end smoke test, CI, Docker and a model card.</dd></div>
       </dl>
     </section>
 
     <section id="problem">
-      <h2><span class="n">1</span>Problem</h2>
+      <h2><span class="cap" style="--c:var(--cap-red)" aria-hidden="true"></span><span class="n">1</span>Problem</h2>
       <p class="lead">Detectors that localize findings are the expensive part of a chest X-ray pipeline, especially at the resolution small lesions need. Yet most studies are normal.</p>
       <div class="fact"><b>~70%</b><span>of VinDr&#8209;CXR studies have no finding [1]. Running the detector on every one spends most of the compute where none is needed.</span></div>
       <p>Skipping studies with a fast classifier is only acceptable if it almost never lets an abnormal study through. The question this project answers: <em>how much time can a gate save, and what does it cost in missed findings?</em></p>
     </section>
 
     <section id="method">
-      <h2><span class="n">2</span>Method</h2>
+      <h2><span class="cap" style="--c:var(--cap-lav)" aria-hidden="true"></span><span class="n">2</span>Method</h2>
       <figure class="fig">
         <div class="frame scroll">
           <svg class="plot" id="pipeline" viewBox="0 0 980 250" style="min-width:680px" role="img" aria-labelledby="fig1-title">
@@ -367,7 +409,7 @@ footer { border-top: 1.5px solid var(--form); margin: 56px 0 0; padding: 18px 0 
         <figcaption><b>Fig. 1.</b> Inference pipeline. Studies with calibrated probability below τ are cleared without running the detector. Grad-CAM explains the gate decision.</figcaption>
       </figure>
       <div class="table-wrap">
-        <table class="stages">
+        <table class="stages stack-sm">
           <thead><tr><th>Stage</th><th>Model and input</th><th>How it is trained or set</th></tr></thead>
           <tbody>
             <tr><td><span class="cap" style="--c:var(--cap-lav)"></span>Gate</td><td>ResNet-50 [2], ImageNet weights, one output logit; 512 × 512</td><td>BCE with <code>pos_weight</code> ≈ 2.4 for the 70/30 balance; rotations, shifts, zoom, brightness, no flips; AdamW, cosine schedule, mixed precision; best validation AUC kept</td></tr>
@@ -380,9 +422,9 @@ footer { border-top: 1.5px solid var(--form); margin: 56px 0 0; padding: 18px 0 
     </section>
 
     <section id="decisions">
-      <h2><span class="n">3</span>Design decisions</h2>
+      <h2><span class="cap" style="--c:var(--cap-grey)" aria-hidden="true"></span><span class="n">3</span>Design decisions</h2>
       <div class="table-wrap">
-        <table>
+        <table class="stack-sm">
           <thead><tr><th>Decision</th><th>Rationale</th><th>Alternative considered</th></tr></thead>
           <tbody>
             <tr><td>Study is abnormal if any radiologist marked a finding</td><td>Maximizes recall for the gate</td><td>Majority vote (2 of 3): cleaner labels, more missed findings</td></tr>
@@ -399,13 +441,13 @@ footer { border-top: 1.5px solid var(--form); margin: 56px 0 0; padding: 18px 0 
 
     <section id="figures">
       <div class="col">
-        <h2><span class="n">4</span>Interactive figures</h2>
+        <h2><span class="cap" style="--c:var(--cap-blue)" aria-hidden="true"></span><span class="n">4</span>Interactive figures</h2>
         <p>Figures 2–4 run in your browser on <strong>simulated data</strong>: they show mechanisms, not model results. Figure 5 is a calculator that starts from illustrative inputs you can replace. Every control works with a keyboard; the boxes in Fig. 3 move with the arrow keys.</p>
       </div>
 
       <figure class="fig" id="fig2">
         <div class="frame">
-          <div class="fig-head"><span class="cap" style="--c:var(--cap-red)"></span>Fig. 2 · Gate threshold</div>
+          <div class="fig-head"><span class="cap" style="--c:var(--cap-lav)"></span>Fig. 2 · Gate threshold</div>
           <div class="fig-grid">
             <div>
               <canvas id="hist" aria-label="Histogram of simulated scores for normal and abnormal studies with the threshold"></canvas>
@@ -435,7 +477,7 @@ footer { border-top: 1.5px solid var(--form); margin: 56px 0 0; padding: 18px 0 
 
       <figure class="fig" id="fig3">
         <div class="frame">
-          <div class="fig-head"><span class="cap" style="--c:var(--cap-lav)"></span>Fig. 3 · Box fusion</div>
+          <div class="fig-head"><span class="cap" style="--c:var(--cap-gold)"></span>Fig. 3 · Box fusion (detector labels)</div>
           <div class="fig-grid">
             <div>
               <svg class="plot" id="wbf" viewBox="0 0 480 300" aria-label="Two draggable radiologist boxes and their fused box">
@@ -489,7 +531,7 @@ footer { border-top: 1.5px solid var(--form); margin: 56px 0 0; padding: 18px 0 
 
       <figure class="fig" id="fig5">
         <div class="frame">
-          <div class="fig-head"><span class="cap" style="--c:var(--cap-green)"></span>Fig. 5 · Operational impact</div>
+          <div class="fig-head"><span class="cap" style="--c:var(--cap-green)"></span>Fig. 5 · Operational impact (evaluation)</div>
           <div class="fig-grid">
             <div>
               <div class="calc">
@@ -507,7 +549,7 @@ footer { border-top: 1.5px solid var(--form); margin: 56px 0 0; padding: 18px 0 
                 <div><dt>Cost saved / month</dt><dd class="num" id="i-cost"></dd></div>
                 <div><dt>Throughput gain</dt><dd class="num" id="i-gain"></dd></div>
                 <div><dt>Abnormal studies / day</dt><dd class="num" id="i-abn"></dd></div>
-                <div><dt>Cleared by the gate / day</dt><dd class="num" id="i-miss"></dd></div>
+                <div><dt>Abnormal studies missed / day</dt><dd class="num" id="i-miss"></dd></div>
               </dl>
             </div>
             <div>
@@ -520,13 +562,13 @@ footer { border-top: 1.5px solid var(--form); margin: 56px 0 0; padding: 18px 0 
             </div>
           </div>
         </div>
-        <figcaption><b>Fig. 5.</b> Operational impact calculator. GPU time = mean latency × volume on one GPU; studies cleared by the gate = volume × abnormal share × (1 − sensitivity). After a real run, <code>src/impact.py</code> computes the same quantities from measured values. <span class="tag">Illustrative inputs</span></figcaption>
+        <figcaption><b>Fig. 5.</b> Operational impact calculator. GPU time = mean latency × volume on one GPU; abnormal studies missed by the gate = volume × abnormal share × (1 − sensitivity). After a real run, <code>src/impact.py</code> computes the same quantities from measured values. <span class="tag">Illustrative inputs</span></figcaption>
       </figure>
     </section>
 
     <div class="col">
     <section id="protocol">
-      <h2><span class="n">5</span>Evaluation protocol</h2>
+      <h2><span class="cap" style="--c:var(--cap-green)" aria-hidden="true"></span><span class="n">5</span>Evaluation protocol</h2>
       <dl class="fields one">
         <div><dt>Data</dt><dd>15,000 VinDr&#8209;CXR training images, each read by 3 of 17 radiologists [1].</dd></div>
         <div><dt>Split</dt><dd>80 / 10 / 10 train, validation, test at image level, stratified on the abnormal label, fixed seed.</dd></div>
@@ -538,12 +580,12 @@ footer { border-top: 1.5px solid var(--form); margin: 56px 0 0; padding: 18px 0 
         <div><dt>Error analysis</dt><dd>Abnormal test studies the gate cleared, by finding class, with the lowest-scoring cases listed for review.</dd></div>
         <div><dt>External validation</dt><dd>NIH ChestX-ray14 (US), frontal views, stratified sample; weights, T and τ reused without retuning. NIH labels are NLP-mined from reports with a different label set, so this tests transfer, not like-for-like accuracy.</dd></div>
         <div><dt>Latency</dt><dd>Warm-up excluded, GPU synchronized before timing, images preloaded; mean, p50 and p95 per study.</dd></div>
-        <div><dt>Impact model</dt><dd>GPU time = mean latency × daily volume on one GPU; studies cleared = volume × prevalence × (1 − sensitivity). At tens of milliseconds per study the GPU cost is small; the case for the gate is throughput on fixed, shared or CPU-only hardware, and the table makes that trade explicit rather than claiming savings.</dd></div>
+        <div><dt>Impact model</dt><dd>GPU time = mean latency × daily volume on one GPU; abnormal studies missed = volume × prevalence × (1 − sensitivity). At tens of milliseconds per study the GPU cost is small; the case for the gate is throughput on fixed, shared or CPU-only hardware, and the table makes that trade explicit rather than claiming savings.</dd></div>
       </dl>
     </section>
 
     <section id="results">
-      <h2><span class="n">6</span>Results</h2>
+      <h2><span class="cap" style="--c:var(--cap-green)" aria-hidden="true"></span><span class="n">6</span>Results</h2>
       <p id="results-note">No trained run has been published yet. Each field below is filled automatically when <code>src/report.py</code> publishes <code>results.json</code> from a real run; nothing on this page is typed in by hand.</p>
       <div class="table-wrap" id="results-table">
         <table>
@@ -561,7 +603,7 @@ footer { border-top: 1.5px solid var(--form); margin: 56px 0 0; padding: 18px 0 
             <tr><td>AUC, sensitivity and specificity by sex and age band</td><td class="v"><span class="pending">Pending</span></td></tr>
             <tr><td>Gate misses by finding class</td><td class="v"><span class="pending">Pending</span></td></tr>
             <tr><td>External validation on NIH ChestX-ray14: AUC, sensitivity, specificity (95% CI)</td><td class="v"><span class="pending">Pending</span></td></tr>
-            <tr><td>GPU hours, cost saved and studies cleared by the gate (measured inputs)</td><td class="v"><span class="pending">Pending</span></td></tr>
+            <tr><td>GPU hours, cost saved and abnormal studies missed by the gate (measured inputs)</td><td class="v"><span class="pending">Pending</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -569,7 +611,7 @@ footer { border-top: 1.5px solid var(--form); margin: 56px 0 0; padding: 18px 0 
     </section>
 
     <section id="demo">
-      <h2><span class="n">7</span>Live demo</h2>
+      <h2><span class="cap" style="--c:var(--cap-gold)" aria-hidden="true"></span><span class="n">7</span>Live demo</h2>
       <p>Runs the real model through the API on your machine; this page only sends the image to the address you enter. It needs trained weights (see section 8).</p>
       <ol class="steps">
         <li><strong>Start the API</strong>
@@ -594,7 +636,7 @@ uvicorn app.server:app --port 8000</code></pre></li>
     </section>
 
     <section id="reproduce">
-      <h2><span class="n">8</span>Reproduce</h2>
+      <h2><span class="cap" style="--c:var(--cap-grey)" aria-hidden="true"></span><span class="n">8</span>Reproduce</h2>
       <p>Python 3.10+ and a GPU for training (a free Kaggle T4 is enough). The whole run is also <code>notebooks/kaggle_run.ipynb</code> or <code>make all</code>; <code>make quick</code> (<code>configs/quick.yaml</code>) gives a first run in about 1–2 hours, and <code>python scripts/smoke_test.py</code> checks every stage on synthetic data in a few minutes.</p>
 <pre><code>git clone https://github.com/danghoang2605-ds-ai/chest-xray-triage.git && cd chest-xray-triage
 pip install -r requirements.txt
@@ -605,12 +647,12 @@ python -m src.evaluate         --config configs/default.yaml   # AUC + CIs, cali
 python -m src.error_analysis   --config configs/default.yaml   # gate misses by finding class
 python -m src.external_eval    --config configs/default.yaml   # optional: NIH ChestX-ray14
 python -m src.benchmark        --config configs/default.yaml --half
-python -m src.impact           --config configs/default.yaml   # compute time, cost, studies cleared
+python -m src.impact           --config configs/default.yaml   # compute time, cost, abnormal studies missed
 python -m src.plots --config configs/default.yaml &amp;&amp; python -m src.report   # figures, README, this page</code></pre>
     </section>
 
     <section id="limitations">
-      <h2><span class="n">9</span>Limitations</h2>
+      <h2><span class="cap" style="--c:var(--cap-red)" aria-hidden="true"></span><span class="n">9</span>Limitations</h2>
       <dl class="fields one">
         <div><dt>Single-country data</dt><dd>VinDr&#8209;CXR comes from Vietnamese hospitals. The NIH check measures transfer to one US source; it does not replace prospective validation, and its NLP-mined labels limit what it can show.</dd></div>
         <div><dt>Label noise</dt><dd>Radiologists often disagree; the “any radiologist” rule trades noise for recall.</dd></div>
@@ -621,7 +663,7 @@ python -m src.plots --config configs/default.yaml &amp;&amp; python -m src.repor
     </section>
 
     <section id="references">
-      <h2>References</h2>
+      <h2><span class="cap" style="--c:var(--cap-grey)" aria-hidden="true"></span>References</h2>
       <ol class="refs">
         <li>Nguyen, H. Q. et al. VinDr-CXR: An open dataset of chest X-rays with radiologist's annotations. <em>Scientific Data</em> 9, 429 (2022).</li>
         <li>He, K., Zhang, X., Ren, S. &amp; Sun, J. Deep residual learning for image recognition. <em>CVPR</em> (2016).</li>
@@ -659,7 +701,38 @@ python -m src.plots --config configs/default.yaml &amp;&amp; python -m src.repor
   document.querySelectorAll("main section[id]").forEach((s) => io.observe(s));
 
   /* ---------- Fig. 1: pipeline diagram ---------- */
+  function drawPipelineVertical() {
+    const ink = css("--ink"), muted = css("--muted"), rule = css("--rule-strong"), bg = css("--paper");
+    const box = (y, title, line, stroke) => `
+      <rect x="20" y="${y}" width="320" height="62" rx="3" fill="${bg}" stroke="${stroke}" stroke-width="2"/>
+      <text x="36" y="${y + 26}" font-size="17" font-weight="600" fill="${ink}">${title}</text>
+      <text x="36" y="${y + 48}" font-size="15" fill="${muted}">${line}</text>`;
+    const down = (y1, y2) => `<line x1="180" y1="${y1}" x2="180" y2="${y2}" stroke="${muted}" stroke-width="1.8" marker-end="url(#ahv)"/>`;
+    const svg = $("pipeline");
+    svg.setAttribute("viewBox", "0 0 360 600"); svg.style.minWidth = "0";
+    svg.innerHTML = `<title id="fig1-title">Pipeline: input, ResNet-50 gate, calibration, threshold decision, YOLOv8 detector, outputs</title>
+      <defs><marker id="ahv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="${muted}"/></marker></defs>
+      ${box(8, "Input", "Chest X-ray, PNG / JPEG", rule)}${down(70, 96)}
+      ${box(98, "Stage 1: gate", "ResNet-50, 512² → logit z", css("--cap-lav"))}${down(160, 186)}
+      ${box(188, "Calibrate", "p = σ(z / T), T from val", css("--cap-blue"))}${down(250, 280)}
+      <polygon points="180,282 236,322 180,362 124,322" fill="${bg}" stroke="${css("--form")}" stroke-width="2.2"/>
+      <text x="180" y="328" font-size="17" font-weight="600" fill="${ink}" text-anchor="middle">p ≥ τ</text>
+      <line x1="236" y1="322" x2="300" y2="322" stroke="${muted}" stroke-width="1.8"/><line x1="300" y1="322" x2="300" y2="396" stroke="${muted}" stroke-width="1.8" marker-end="url(#ahv)"/>
+      <text x="262" y="314" font-size="15" fill="${muted}">no</text>
+      <rect x="230" y="398" width="110" height="52" rx="3" fill="${bg}" stroke="${rule}" stroke-width="2"/>
+      <text x="244" y="420" font-size="16" font-weight="600" fill="${ink}">Cleared</text>
+      <text x="244" y="440" font-size="13.5" fill="${muted}">no detector</text>
+      ${down(362, 470)}<text x="190" y="420" font-size="15" fill="${muted}">yes</text>
+      <rect x="20" y="472" width="200" height="62" rx="3" fill="${bg}" stroke="${css("--cap-gold")}" stroke-width="2"/>
+      <text x="36" y="498" font-size="17" font-weight="600" fill="${ink}">Stage 2: detect</text>
+      <text x="36" y="520" font-size="15" fill="${muted}">YOLOv8s, 1024² input</text>
+      <text x="36" y="566" font-size="16" font-weight="600" fill="${ink}">→ Boxes for 14 finding types</text>
+      <text x="36" y="590" font-size="14" fill="${muted}">Grad-CAM explains the gate decision</text>`;
+  }
+
   function drawPipeline() {
+    if ($("pipeline").parentElement.clientWidth < 600) { drawPipelineVertical(); return; }
+    $("pipeline").style.minWidth = "680px";
     const ink = css("--ink"), muted = css("--muted"), rule = css("--rule-strong"), acc = css("--cap-lav"), fin = css("--cap-gold"), cal = css("--cap-blue"), bg = css("--paper");
     const box = (x, y, w, h, title, lines, stroke = rule) => `
       <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="${bg}" stroke="${stroke}" stroke-width="2"/>
@@ -716,8 +789,9 @@ python -m src.plots --config configs/default.yaml &amp;&amp; python -m src.repor
     ctx.font = "13px " + css("--sans"); ctx.fillStyle = css("--muted");
     ctx.textAlign = "left"; ctx.fillText("0", x0, h - 5); ctx.textAlign = "right"; ctx.fillText("1", x0 + pw, h - 5);
     ctx.textAlign = "center"; ctx.fillText("score", x0 + pw / 2, h - 5);
-    ctx.fillStyle = css("--ink"); ctx.textAlign = tau > 0.5 ? "right" : "left";
-    ctx.fillText(tau > 0.5 ? "cleared" : "flagged", tx + (tau > 0.5 ? -6 : 6), top + 4);
+    ctx.fillStyle = css("--ink");
+    if (tx > 70) { ctx.textAlign = "right"; ctx.fillText("← cleared", tx - 6, top + 4); }
+    if (pw - tx > 70) { ctx.textAlign = "left"; ctx.fillText("flagged →", tx + 6, top + 4); }
   }
   function updateGate() {
     const tau = +$("tau").value; $("tau-v").textContent = tau.toFixed(2);
@@ -747,8 +821,11 @@ python -m src.plots --config configs/default.yaml &amp;&amp; python -m src.repor
   tickets.forEach((t, i) => {
     const el = document.createElement("div");
     el.className = "ticket"; el.setAttribute("role", "listitem");
-    el.innerHTML = `<div class="row"><span>#${String(i + 1).padStart(2, "0")}</span><span class="cap" style="--c:var(${t.ab ? "--cap-red" : "--cap-grey"})"></span></div><div class="bar"><i style="left:calc(${(t.s * 100).toFixed(1)}% - 1px)"></i></div><span class="st"></span>`;
-    t.el = el; t.st = el.querySelector(".st"); tBox.appendChild(el);
+    el.innerHTML = `<div class="row"><span>#${String(i + 1).padStart(2, "0")}</span><span class="cap" style="--c:var(${t.ab ? "--cap-red" : "--cap-grey"})"></span></div>`
+      + `<div class="bar"><b></b><i style="left:calc(${(t.s * 100).toFixed(1)}% - 1px)"></i></div>`
+      + `<span class="st"><span class="box"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 5.2 4 7.6 8.6 2.4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></span>Detector</span>`
+      + `<span class="stamp" aria-hidden="true"></span>`;
+    t.el = el; t.stamp = el.querySelector(".stamp"); t.line = el.querySelector(".bar b"); tBox.appendChild(el);
   });
   function updateTickets(tau) {
     let cleared = 0, missed = 0;
@@ -756,8 +833,10 @@ python -m src.plots --config configs/default.yaml &amp;&amp; python -m src.repor
       const clear = t.s < tau, miss = clear && t.ab;
       cleared += clear; missed += miss;
       t.el.className = "ticket " + (miss ? "missed" : clear ? "cleared" : "sent");
-      t.st.textContent = miss ? "Missed" : clear ? "Cleared" : "To detector";
-      t.el.setAttribute("aria-label", `Study ${i + 1}, ${t.ab ? "abnormal" : "normal"}, score ${t.s.toFixed(2)}: ${t.st.textContent}`);
+      t.stamp.textContent = miss ? "Missed" : "Cleared";
+      t.line.style.left = (tau * 100).toFixed(1) + "%";
+      const state = miss ? "missed by the gate" : clear ? "cleared" : "sent to the detector";
+      t.el.setAttribute("aria-label", `Study ${i + 1}, ${t.ab ? "abnormal" : "normal"}, score ${t.s.toFixed(2)}: ${state}`);
     });
     $("tau-strip-v").textContent = tau.toFixed(2);
     $("s-cleared").innerHTML = `${cleared} <small>of 40</small>`;
@@ -813,12 +892,12 @@ python -m src.plots --config configs/default.yaml &amp;&amp; python -m src.repor
       <line x1="${P}" y1="${P}" x2="${P}" y2="${H - P}" stroke="${rule}"/>
       <line x1="${xs(0)}" y1="${P}" x2="${xs(0)}" y2="${H - P}" stroke="${rule}" stroke-dasharray="4 4"/>
       <line x1="${P}" y1="${ys(0.5)}" x2="${W - P}" y2="${ys(0.5)}" stroke="${rule}" stroke-dasharray="4 4"/>
-      <text x="${P}" y="${H - 12}" fill="${muted}" font-size="13">−6</text>
-      <text x="${W / 2}" y="${H - 12}" fill="${muted}" font-size="13" text-anchor="middle">logit z</text>
-      <text x="${W - P}" y="${H - 12}" fill="${muted}" font-size="13" text-anchor="end">+6</text>
-      <text x="${P - 8}" y="${ys(1) + 4}" fill="${muted}" font-size="13" text-anchor="end">1</text>
-      <text x="${P - 8}" y="${ys(0.5) + 4}" fill="${muted}" font-size="13" text-anchor="end">.5</text>
-      <text x="${P - 8}" y="${ys(0) + 4}" fill="${muted}" font-size="13" text-anchor="end">0</text>
+      <text x="${P}" y="${H - 12}" fill="${muted}" font-size="17">−6</text>
+      <text x="${W / 2}" y="${H - 12}" fill="${muted}" font-size="17" text-anchor="middle">logit z</text>
+      <text x="${W - P}" y="${H - 12}" fill="${muted}" font-size="17" text-anchor="end">+6</text>
+      <text x="${P - 8}" y="${ys(1) + 4}" fill="${muted}" font-size="17" text-anchor="end">1</text>
+      <text x="${P - 8}" y="${ys(0.5) + 4}" fill="${muted}" font-size="17" text-anchor="end">.5</text>
+      <text x="${P - 8}" y="${ys(0) + 4}" fill="${muted}" font-size="17" text-anchor="end">0</text>
       <path d="${curve(1)}" fill="none" stroke="${css("--normal")}" stroke-width="2.5"/>
       <path d="${curve(T)}" fill="none" stroke="${css("--accent")}" stroke-width="3"/>
       ${pts.map((z) => `<circle cx="${xs(z)}" cy="${ys(sig(z / T))}" r="4.5" fill="${css("--accent")}"/>`).join("")}`;
@@ -842,7 +921,7 @@ python -m src.plots --config configs/default.yaml &amp;&amp; python -m src.repor
     $("i-cost").textContent = usd((hours(td) - hours(two)) * 30 * cost);
     $("i-gain").textContent = two > 0 ? (td / two).toFixed(2) + "×" : "n/a";
     $("i-abn").textContent = Math.round(vol * prev).toLocaleString("en-US");
-    $("i-miss").textContent = (vol * prev * (1 - sens)).toFixed(1);
+    $("i-miss").textContent = (vol * prev * (1 - sens)).toLocaleString("en-US", { maximumFractionDigits: 1 });
   }
   ["c-vol", "c-prev", "c-sens", "c-sent", "c-gate", "c-det", "c-cost"].forEach((id) => $(id).addEventListener("input", updateImpact));
   const PRESETS = {
@@ -949,10 +1028,16 @@ python -m src.plots --config configs/default.yaml &amp;&amp; python -m src.repor
     catch (e) { msg("run-msg", "Grad-CAM failed: " + e.message, "err"); }
   });
 
+  /* ---------- small screens: each table cell carries its column name ---------- */
+  document.querySelectorAll("table.stack-sm").forEach((t) => {
+    const heads = [...t.querySelectorAll("thead th")].map((th) => th.textContent.trim());
+    t.querySelectorAll("tbody tr").forEach((tr) => [...tr.children].forEach((td, i) => td.setAttribute("data-label", heads[i] || "")));
+  });
+
   /* ---------- init and theme changes ---------- */
   function renderAll() { drawPipeline(); styleWbf(); updateGate(); updateWbf(); updateCal(); updateImpact(); }
   renderAll();
-  window.addEventListener("resize", drawHist);
+  window.addEventListener("resize", () => { drawHist(); drawPipeline(); });
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", renderAll);
   document.fonts && document.fonts.ready.then(renderAll);
 })();
