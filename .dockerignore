@@ -1,0 +1,12 @@
+.git
+.github
+data/
+runs/
+notebooks/
+docs/
+site/
+tests/
+**/__pycache__
+*.pt
+*.onnx
+.pytest_cache

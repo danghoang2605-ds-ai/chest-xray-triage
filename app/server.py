@@ -9,6 +9,7 @@ is then unavailable.
 """
 import inspect
 import io
+import logging
 import os
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -26,12 +27,20 @@ MAX_BYTES = 20 * 1024 * 1024
 DEFAULT_ORIGINS = "https://danghoang2605-ds-ai.github.io,http://localhost:8000,http://127.0.0.1:8000"
 CORS_ORIGINS = [o.strip() for o in os.getenv("CORS_ORIGINS", DEFAULT_ORIGINS).split(",") if o.strip()]
 state = {}
+log = logging.getLogger("uvicorn.error")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    cls_ckpt, det_weights = os.getenv("CLS_CKPT"), os.getenv("DET_WEIGHTS")
+    if not cls_ckpt or not det_weights:
+        # Start anyway so /health and the UI work; inference endpoints answer 503.
+        log.warning("CLS_CKPT / DET_WEIGHTS not set: serving without a model")
+        yield
+        state.clear()
+        return
     state["pipe"] = TwoStagePipeline(
-        os.environ["CLS_CKPT"], os.environ["DET_WEIGHTS"],
+        cls_ckpt, det_weights,
         gate_threshold=float(os.getenv("GATE_THRESHOLD", "0.3")),
         det_conf=float(os.getenv("DET_CONF", "0.15")),
         det_imgsz=int(os.getenv("DET_IMGSZ", "1024")),
@@ -75,6 +84,13 @@ def _read_image(file: UploadFile) -> Image.Image:
         raise HTTPException(status_code=400, detail="Could not read image") from None
 
 
+def _pipeline() -> TwoStagePipeline:
+    pipe = state.get("pipe")
+    if pipe is None:
+        raise HTTPException(status_code=503, detail="Model not loaded: set CLS_CKPT and DET_WEIGHTS")
+    return pipe
+
+
 @app.get("/", include_in_schema=False)
 def root():
     return RedirectResponse("/ui/")
@@ -92,14 +108,16 @@ def health():
 @app.post("/predict")
 def predict(file: UploadFile = File(...),
             mode: str = Query("two_stage", pattern="^(two_stage|detector_only)$")):
-    return state["pipe"](_read_image(file), mode=mode)
+    pipe = _pipeline()
+    return pipe(_read_image(file), mode=mode)
 
 
 @app.post("/explain", responses={200: {"content": {"image/png": {}}}})
 def explain(file: UploadFile = File(...)):
     """Grad-CAM heatmap (PNG) showing what drove the gate's decision."""
+    pipe = _pipeline()
     try:
-        heat, prob = state["pipe"].explain(_read_image(file))
+        heat, prob = pipe.explain(_read_image(file))
     except RuntimeError as e:
         raise HTTPException(status_code=501, detail=str(e)) from e
     buf = io.BytesIO()

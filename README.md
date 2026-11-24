@@ -178,12 +178,16 @@ Open http://localhost:8000 for the built-in UI, http://localhost:8000/docs for S
 | `POST /predict?mode=two_stage\|detector_only` | Gate score, decision, boxes and timings for one image |
 | `POST /explain` | Grad-CAM overlay as PNG; probability in the `X-Abnormal-Prob` header |
 | `GET /health` | Model loaded, backend, current τ |
+
+Without `CLS_CKPT` / `DET_WEIGHTS` the server still starts (UI and `/health` work) and `/predict` and `/explain` answer `503` instead of crashing at startup.
+
+**Docker:** `docker build -t cxr-triage . && docker run -p 8000:8000 -v $PWD/weights:/models:ro cxr-triage` (CPU-only torch by default, non-root user, built-in health check).
 | `GET /` | Built-in web UI |
 
 ## Testing
 
 ```bash
-python -m pytest -q          # 51 unit and contract tests, no GPU or weights needed
+python -m pytest -q          # 53 unit and contract tests, no GPU or weights needed
 ruff check .
 python scripts/smoke_test.py # end-to-end on synthetic data: every stage, tiny models, a few minutes on CPU
 ```
@@ -227,7 +231,7 @@ None of the unit tests need a GPU or weights: the API tests use a stub model. Th
 - **Subgroup data.** Sex and age come from DICOM headers and are sometimes missing; small groups are flagged, not interpreted.
 - **Impact model is deliberately simple.** One GPU, one study at a time. At GPU speeds the cost saving is small; the stronger case is throughput on fixed or CPU-only hardware.
 - **Gate as a single point of failure.** A missed study never reaches the detector; the two-stage mAP makes that cost visible but does not remove it.
-- **Planned:** TensorRT engines, batched inference, class-specific thresholds, subgroup analysis.
+- **Planned:** see [ROADMAP.md](ROADMAP.md) (real full-profile results, TensorRT engines, batched inference, class-specific thresholds).
 
 ## Data and license
 

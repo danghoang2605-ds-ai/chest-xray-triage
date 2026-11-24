@@ -1,14 +1,27 @@
 name: tests
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-      # Tests cover data prep, metrics and calibration; they don't need torch/GPU.
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: requirements.txt
+      # Tests cover data prep, metrics, calibration and the API contract; they don't need torch/GPU.
       - run: pip install numpy pandas scipy scikit-learn pillow pyyaml ensemble-boxes pytest fastapi httpx python-multipart matplotlib ruff
       - run: ruff check .
       - run: python -m pytest -q

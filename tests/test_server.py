@@ -88,3 +88,15 @@ def test_cors_allows_github_pages(client):
 def test_cors_rejects_unknown_origin(client):
     r = client.options("/predict", headers={"Origin": "https://evil.example", "Access-Control-Request-Method": "POST"})
     assert "access-control-allow-origin" not in r.headers
+
+
+def test_starts_without_weights_and_answers_503(monkeypatch):
+    monkeypatch.setitem(sys.modules, "src.pipeline", types.SimpleNamespace(TwoStagePipeline=StubPipeline))
+    monkeypatch.delenv("CLS_CKPT", raising=False)
+    monkeypatch.delenv("DET_WEIGHTS", raising=False)
+    sys.modules.pop("app.server", None)
+    from app.server import app
+    with TestClient(app) as c:
+        assert c.get("/health").json()["model_loaded"] is False
+        assert c.post("/predict", files=_png()).status_code == 503
+        assert c.post("/explain", files=_png()).status_code == 503
