@@ -1,0 +1,833 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-25T02:42:52Z",
+  "title": "Design System: Chest X-ray Triage",
+  "extensions": {
+    "colorMeta": {
+      "form": {
+        "role": "primary",
+        "displayName": "Requisition Blue",
+        "canonical": "#1C3F94",
+        "scheme": "light",
+        "cssVar": "--form",
+        "purpose": "The form's ink: structural rules, labels, section numbers, focus, the τ line, primary buttons, links.",
+        "tonalRamp": [
+          "oklch(15% 0.066 264)",
+          "oklch(25% 0.102 264)",
+          "oklch(35% 0.131 264)",
+          "oklch(48% 0.146 264)",
+          "oklch(62% 0.146 264)",
+          "oklch(75% 0.117 264)",
+          "oklch(86% 0.073 264)",
+          "oklch(95% 0.029 264)"
+        ]
+      },
+      "form-soft": {
+        "role": "primary",
+        "displayName": "Header Wash",
+        "canonical": "#E6ECF8",
+        "scheme": "light",
+        "cssVar": "--form-soft",
+        "purpose": "Figure heads, table header rows, the active contents link.",
+        "tonalRamp": [
+          "oklch(15% 0.008 264)",
+          "oklch(25% 0.012 264)",
+          "oklch(35% 0.016 264)",
+          "oklch(48% 0.017 264)",
+          "oklch(62% 0.017 264)",
+          "oklch(75% 0.014 264)",
+          "oklch(86% 0.009 264)",
+          "oklch(95% 0.003 264)"
+        ]
+      },
+      "cap-lav": {
+        "role": "secondary",
+        "displayName": "Lavender Cap",
+        "canonical": "#6F4FA8",
+        "scheme": "light",
+        "cssVar": "--cap-lav",
+        "purpose": "Cap code: the gate.",
+        "tonalRamp": [
+          "oklch(15% 0.062 298)",
+          "oklch(25% 0.097 298)",
+          "oklch(35% 0.124 298)",
+          "oklch(48% 0.138 298)",
+          "oklch(62% 0.138 298)",
+          "oklch(75% 0.111 298)",
+          "oklch(86% 0.069 298)",
+          "oklch(95% 0.028 298)"
+        ]
+      },
+      "cap-blue": {
+        "role": "secondary",
+        "displayName": "Light Blue Cap",
+        "canonical": "#2F7FC1",
+        "scheme": "light",
+        "cssVar": "--cap-blue",
+        "purpose": "Cap code: calibration. Also the second plot series (--second).",
+        "tonalRamp": [
+          "oklch(15% 0.057 247)",
+          "oklch(25% 0.089 247)",
+          "oklch(35% 0.115 247)",
+          "oklch(48% 0.127 247)",
+          "oklch(62% 0.127 247)",
+          "oklch(75% 0.102 247)",
+          "oklch(86% 0.064 247)",
+          "oklch(95% 0.025 247)"
+        ]
+      },
+      "cap-gold": {
+        "role": "secondary",
+        "displayName": "Gold Cap",
+        "canonical": "#A77D10",
+        "scheme": "light",
+        "cssVar": "--cap-gold",
+        "purpose": "Cap code: the detector. Also the status dot and quick-run banner.",
+        "tonalRamp": [
+          "oklch(15% 0.055 84)",
+          "oklch(25% 0.086 84)",
+          "oklch(35% 0.110 84)",
+          "oklch(48% 0.122 84)",
+          "oklch(62% 0.122 84)",
+          "oklch(75% 0.098 84)",
+          "oklch(86% 0.061 84)",
+          "oklch(95% 0.024 84)"
+        ]
+      },
+      "cap-green": {
+        "role": "secondary",
+        "displayName": "Green Cap",
+        "canonical": "#24794C",
+        "scheme": "light",
+        "cssVar": "--cap-green",
+        "purpose": "Cap code: evaluation.",
+        "tonalRamp": [
+          "oklch(15% 0.049 156)",
+          "oklch(25% 0.075 156)",
+          "oklch(35% 0.097 156)",
+          "oklch(48% 0.108 156)",
+          "oklch(62% 0.108 156)",
+          "oklch(75% 0.086 156)",
+          "oklch(86% 0.054 156)",
+          "oklch(95% 0.022 156)"
+        ]
+      },
+      "cap-red": {
+        "role": "secondary",
+        "displayName": "Red Cap",
+        "canonical": "#B3312F",
+        "scheme": "light",
+        "cssVar": "--cap-red",
+        "purpose": "Cap code: risk and abnormality; findings (--finding), errors (--warn), missed tickets, the safety notice.",
+        "tonalRamp": [
+          "oklch(15% 0.075 26)",
+          "oklch(25% 0.117 26)",
+          "oklch(35% 0.150 26)",
+          "oklch(48% 0.167 26)",
+          "oklch(62% 0.167 26)",
+          "oklch(75% 0.134 26)",
+          "oklch(86% 0.084 26)",
+          "oklch(95% 0.033 26)"
+        ]
+      },
+      "cap-grey": {
+        "role": "secondary",
+        "displayName": "Grey Cap",
+        "canonical": "#6B7384",
+        "scheme": "light",
+        "cssVar": "--cap-grey",
+        "purpose": "Cap code: neutral sections and normal-study chips.",
+        "tonalRamp": [
+          "oklch(15% 0.013 265)",
+          "oklch(25% 0.020 265)",
+          "oklch(35% 0.025 265)",
+          "oklch(48% 0.028 265)",
+          "oklch(62% 0.028 265)",
+          "oklch(75% 0.023 265)",
+          "oklch(86% 0.014 265)",
+          "oklch(95% 0.006 265)"
+        ]
+      },
+      "normal": {
+        "role": "tertiary",
+        "displayName": "Normal-Study Grey",
+        "canonical": "#8A93A6",
+        "scheme": "light",
+        "cssVar": "--normal",
+        "purpose": "Normal-study histogram bars and the raw calibration curve.",
+        "tonalRamp": [
+          "oklch(15% 0.014 265)",
+          "oklch(25% 0.021 265)",
+          "oklch(35% 0.027 265)",
+          "oklch(48% 0.030 265)",
+          "oklch(62% 0.030 265)",
+          "oklch(75% 0.024 265)",
+          "oklch(86% 0.015 265)",
+          "oklch(95% 0.006 265)"
+        ]
+      },
+      "ok": {
+        "role": "tertiary",
+        "displayName": "Connected Green",
+        "canonical": "#1D6E46",
+        "scheme": "light",
+        "cssVar": "--ok",
+        "purpose": "Success messages in the live demo.",
+        "tonalRamp": [
+          "oklch(15% 0.045 157)",
+          "oklch(25% 0.070 157)",
+          "oklch(35% 0.091 157)",
+          "oklch(48% 0.101 157)",
+          "oklch(62% 0.101 157)",
+          "oklch(75% 0.080 157)",
+          "oklch(86% 0.050 157)",
+          "oklch(95% 0.020 157)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Form Stock",
+        "canonical": "#FFFFFF",
+        "scheme": "light",
+        "cssVar": "--paper",
+        "purpose": "Page, frames, tickets, inputs, the pending box.",
+        "tonalRamp": [
+          "oklch(15% 0.000 0)",
+          "oklch(25% 0.000 0)",
+          "oklch(35% 0.000 0)",
+          "oklch(48% 0.000 0)",
+          "oklch(62% 0.000 0)",
+          "oklch(75% 0.000 0)",
+          "oklch(86% 0.000 0)",
+          "oklch(95% 0.000 0)"
+        ]
+      },
+      "field": {
+        "role": "neutral",
+        "displayName": "Field Tint",
+        "canonical": "#F4F6FB",
+        "scheme": "light",
+        "cssVar": "--field",
+        "purpose": "Code, guide boxes, cleared tickets, plot backgrounds (--surface, --code-bg).",
+        "tonalRamp": [
+          "oklch(15% 0.003 269)",
+          "oklch(25% 0.005 269)",
+          "oklch(35% 0.006 269)",
+          "oklch(48% 0.007 269)",
+          "oklch(62% 0.007 269)",
+          "oklch(75% 0.006 269)",
+          "oklch(86% 0.003 269)",
+          "oklch(95% 0.001 269)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Reading Ink",
+        "canonical": "#141A28",
+        "scheme": "light",
+        "cssVar": "--ink",
+        "purpose": "Body text, headings, readout values.",
+        "tonalRamp": [
+          "oklch(15% 0.013 266)",
+          "oklch(25% 0.020 266)",
+          "oklch(35% 0.026 266)",
+          "oklch(48% 0.029 266)",
+          "oklch(62% 0.029 266)",
+          "oklch(75% 0.023 266)",
+          "oklch(86% 0.015 266)",
+          "oklch(95% 0.006 266)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Carbon Grey",
+        "canonical": "#4B5568",
+        "scheme": "light",
+        "cssVar": "--muted",
+        "purpose": "Captions, legends, resting contents links, ticket IDs, the pending label.",
+        "tonalRamp": [
+          "oklch(15% 0.015 263)",
+          "oklch(25% 0.024 263)",
+          "oklch(35% 0.030 263)",
+          "oklch(48% 0.034 263)",
+          "oklch(62% 0.034 263)",
+          "oklch(75% 0.027 263)",
+          "oklch(86% 0.017 263)",
+          "oklch(95% 0.007 263)"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#CCD5EA",
+        "scheme": "light",
+        "cssVar": "--rule",
+        "purpose": "Dividers inside cells and tables, the rail edge, ticket bars.",
+        "tonalRamp": [
+          "oklch(15% 0.014 267)",
+          "oklch(25% 0.021 267)",
+          "oklch(35% 0.028 267)",
+          "oklch(48% 0.031 267)",
+          "oklch(62% 0.031 267)",
+          "oklch(75% 0.024 267)",
+          "oklch(86% 0.015 267)",
+          "oklch(95% 0.006 267)"
+        ]
+      },
+      "rule-strong": {
+        "role": "neutral",
+        "displayName": "Form Rule",
+        "canonical": "#93A5D2",
+        "scheme": "light",
+        "cssVar": "--rule-strong",
+        "purpose": "Frame, ticket, table and input outlines; the slider track.",
+        "tonalRamp": [
+          "oklch(15% 0.031 268)",
+          "oklch(25% 0.048 268)",
+          "oklch(35% 0.062 268)",
+          "oklch(48% 0.069 268)",
+          "oklch(62% 0.069 268)",
+          "oklch(75% 0.055 268)",
+          "oklch(86% 0.034 268)",
+          "oklch(95% 0.014 268)"
+        ]
+      },
+      "form-dark": {
+        "role": "primary",
+        "displayName": "Requisition Blue (dark)",
+        "canonical": "#8DADF5",
+        "scheme": "dark",
+        "cssVar": "--form",
+        "purpose": "The form's ink: structural rules, labels, section numbers, focus, the τ line, primary buttons, links.",
+        "tonalRamp": [
+          "oklch(15% 0.050 265)",
+          "oklch(25% 0.077 265)",
+          "oklch(35% 0.099 265)",
+          "oklch(48% 0.110 265)",
+          "oklch(62% 0.110 265)",
+          "oklch(75% 0.088 265)",
+          "oklch(86% 0.055 265)",
+          "oklch(95% 0.022 265)"
+        ]
+      },
+      "form-soft-dark": {
+        "role": "primary",
+        "displayName": "Header Wash (dark)",
+        "canonical": "#1A2540",
+        "scheme": "dark",
+        "cssVar": "--form-soft",
+        "purpose": "Figure heads, table header rows, the active contents link.",
+        "tonalRamp": [
+          "oklch(15% 0.024 266)",
+          "oklch(25% 0.037 266)",
+          "oklch(35% 0.048 266)",
+          "oklch(48% 0.053 266)",
+          "oklch(62% 0.053 266)",
+          "oklch(75% 0.042 266)",
+          "oklch(86% 0.026 266)",
+          "oklch(95% 0.011 266)"
+        ]
+      },
+      "cap-lav-dark": {
+        "role": "secondary",
+        "displayName": "Lavender Cap (dark)",
+        "canonical": "#B49BE6",
+        "scheme": "dark",
+        "cssVar": "--cap-lav",
+        "purpose": "Cap code: the gate.",
+        "tonalRamp": [
+          "oklch(15% 0.049 299)",
+          "oklch(25% 0.076 299)",
+          "oklch(35% 0.098 299)",
+          "oklch(48% 0.109 299)",
+          "oklch(62% 0.109 299)",
+          "oklch(75% 0.087 299)",
+          "oklch(86% 0.055 299)",
+          "oklch(95% 0.022 299)"
+        ]
+      },
+      "cap-blue-dark": {
+        "role": "secondary",
+        "displayName": "Light Blue Cap (dark)",
+        "canonical": "#6FB4EC",
+        "scheme": "dark",
+        "cssVar": "--cap-blue",
+        "purpose": "Cap code: calibration. Also the second plot series (--second).",
+        "tonalRamp": [
+          "oklch(15% 0.048 244)",
+          "oklch(25% 0.075 244)",
+          "oklch(35% 0.097 244)",
+          "oklch(48% 0.107 244)",
+          "oklch(62% 0.107 244)",
+          "oklch(75% 0.086 244)",
+          "oklch(86% 0.054 244)",
+          "oklch(95% 0.021 244)"
+        ]
+      },
+      "cap-gold-dark": {
+        "role": "secondary",
+        "displayName": "Gold Cap (dark)",
+        "canonical": "#E3BD55",
+        "scheme": "dark",
+        "cssVar": "--cap-gold",
+        "purpose": "Cap code: the detector. Also the status dot and quick-run banner.",
+        "tonalRamp": [
+          "oklch(15% 0.058 89)",
+          "oklch(25% 0.090 89)",
+          "oklch(35% 0.116 89)",
+          "oklch(48% 0.129 89)",
+          "oklch(62% 0.129 89)",
+          "oklch(75% 0.103 89)",
+          "oklch(86% 0.065 89)",
+          "oklch(95% 0.026 89)"
+        ]
+      },
+      "cap-green-dark": {
+        "role": "secondary",
+        "displayName": "Green Cap (dark)",
+        "canonical": "#5CC690",
+        "scheme": "dark",
+        "cssVar": "--cap-green",
+        "purpose": "Cap code: evaluation.",
+        "tonalRamp": [
+          "oklch(15% 0.057 159)",
+          "oklch(25% 0.089 159)",
+          "oklch(35% 0.114 159)",
+          "oklch(48% 0.127 159)",
+          "oklch(62% 0.127 159)",
+          "oklch(75% 0.102 159)",
+          "oklch(86% 0.063 159)",
+          "oklch(95% 0.025 159)"
+        ]
+      },
+      "cap-red-dark": {
+        "role": "secondary",
+        "displayName": "Red Cap (dark)",
+        "canonical": "#F0807C",
+        "scheme": "dark",
+        "cssVar": "--cap-red",
+        "purpose": "Cap code: risk and abnormality; findings (--finding), errors (--warn), missed tickets, the safety notice.",
+        "tonalRamp": [
+          "oklch(15% 0.062 23)",
+          "oklch(25% 0.097 23)",
+          "oklch(35% 0.124 23)",
+          "oklch(48% 0.138 23)",
+          "oklch(62% 0.138 23)",
+          "oklch(75% 0.111 23)",
+          "oklch(86% 0.069 23)",
+          "oklch(95% 0.028 23)"
+        ]
+      },
+      "cap-grey-dark": {
+        "role": "secondary",
+        "displayName": "Grey Cap (dark)",
+        "canonical": "#9AA3B5",
+        "scheme": "dark",
+        "cssVar": "--cap-grey",
+        "purpose": "Cap code: neutral sections and normal-study chips.",
+        "tonalRamp": [
+          "oklch(15% 0.013 264)",
+          "oklch(25% 0.020 264)",
+          "oklch(35% 0.025 264)",
+          "oklch(48% 0.028 264)",
+          "oklch(62% 0.028 264)",
+          "oklch(75% 0.023 264)",
+          "oklch(86% 0.014 264)",
+          "oklch(95% 0.006 264)"
+        ]
+      },
+      "normal-dark": {
+        "role": "tertiary",
+        "displayName": "Normal-Study Grey (dark)",
+        "canonical": "#8E98AD",
+        "scheme": "dark",
+        "cssVar": "--normal",
+        "purpose": "Normal-study histogram bars and the raw calibration curve.",
+        "tonalRamp": [
+          "oklch(15% 0.015 265)",
+          "oklch(25% 0.023 265)",
+          "oklch(35% 0.030 265)",
+          "oklch(48% 0.033 265)",
+          "oklch(62% 0.033 265)",
+          "oklch(75% 0.026 265)",
+          "oklch(86% 0.017 265)",
+          "oklch(95% 0.007 265)"
+        ]
+      },
+      "ok-dark": {
+        "role": "tertiary",
+        "displayName": "Connected Green (dark)",
+        "canonical": "#5CC690",
+        "scheme": "dark",
+        "cssVar": "--ok",
+        "purpose": "Success messages in the live demo.",
+        "tonalRamp": [
+          "oklch(15% 0.057 159)",
+          "oklch(25% 0.089 159)",
+          "oklch(35% 0.114 159)",
+          "oklch(48% 0.127 159)",
+          "oklch(62% 0.127 159)",
+          "oklch(75% 0.102 159)",
+          "oklch(86% 0.063 159)",
+          "oklch(95% 0.025 159)"
+        ]
+      },
+      "paper-dark": {
+        "role": "neutral",
+        "displayName": "Form Stock (dark)",
+        "canonical": "#0D1322",
+        "scheme": "dark",
+        "cssVar": "--paper",
+        "purpose": "Page, frames, tickets, inputs, the pending box.",
+        "tonalRamp": [
+          "oklch(15% 0.014 267)",
+          "oklch(25% 0.022 267)",
+          "oklch(35% 0.029 267)",
+          "oklch(48% 0.032 267)",
+          "oklch(62% 0.032 267)",
+          "oklch(75% 0.026 267)",
+          "oklch(86% 0.016 267)",
+          "oklch(95% 0.006 267)"
+        ]
+      },
+      "field-dark": {
+        "role": "neutral",
+        "displayName": "Field Tint (dark)",
+        "canonical": "#141C30",
+        "scheme": "dark",
+        "cssVar": "--field",
+        "purpose": "Code, guide boxes, cleared tickets, plot backgrounds (--surface, --code-bg).",
+        "tonalRamp": [
+          "oklch(15% 0.018 267)",
+          "oklch(25% 0.029 267)",
+          "oklch(35% 0.037 267)",
+          "oklch(48% 0.041 267)",
+          "oklch(62% 0.041 267)",
+          "oklch(75% 0.033 267)",
+          "oklch(86% 0.020 267)",
+          "oklch(95% 0.008 267)"
+        ]
+      },
+      "ink-dark": {
+        "role": "neutral",
+        "displayName": "Reading Ink (dark)",
+        "canonical": "#E8EDF6",
+        "scheme": "dark",
+        "cssVar": "--ink",
+        "purpose": "Body text, headings, readout values.",
+        "tonalRamp": [
+          "oklch(15% 0.006 262)",
+          "oklch(25% 0.009 262)",
+          "oklch(35% 0.012 262)",
+          "oklch(48% 0.013 262)",
+          "oklch(62% 0.013 262)",
+          "oklch(75% 0.011 262)",
+          "oklch(86% 0.007 262)",
+          "oklch(95% 0.003 262)"
+        ]
+      },
+      "muted-dark": {
+        "role": "neutral",
+        "displayName": "Carbon Grey (dark)",
+        "canonical": "#A9B4CA",
+        "scheme": "dark",
+        "cssVar": "--muted",
+        "purpose": "Captions, legends, resting contents links, ticket IDs, the pending label.",
+        "tonalRamp": [
+          "oklch(15% 0.015 264)",
+          "oklch(25% 0.024 264)",
+          "oklch(35% 0.030 264)",
+          "oklch(48% 0.034 264)",
+          "oklch(62% 0.034 264)",
+          "oklch(75% 0.027 264)",
+          "oklch(86% 0.017 264)",
+          "oklch(95% 0.007 264)"
+        ]
+      },
+      "rule-dark": {
+        "role": "neutral",
+        "displayName": "Hairline (dark)",
+        "canonical": "#263354",
+        "scheme": "dark",
+        "cssVar": "--rule",
+        "purpose": "Dividers inside cells and tables, the rail edge, ticket bars.",
+        "tonalRamp": [
+          "oklch(15% 0.028 267)",
+          "oklch(25% 0.043 267)",
+          "oklch(35% 0.055 267)",
+          "oklch(48% 0.061 267)",
+          "oklch(62% 0.061 267)",
+          "oklch(75% 0.049 267)",
+          "oklch(86% 0.031 267)",
+          "oklch(95% 0.012 267)"
+        ]
+      },
+      "rule-strong-dark": {
+        "role": "neutral",
+        "displayName": "Form Rule (dark)",
+        "canonical": "#3D5185",
+        "scheme": "dark",
+        "cssVar": "--rule-strong",
+        "purpose": "Frame, ticket, table and input outlines; the slider track.",
+        "tonalRamp": [
+          "oklch(15% 0.040 267)",
+          "oklch(25% 0.063 267)",
+          "oklch(35% 0.080 267)",
+          "oklch(48% 0.089 267)",
+          "oklch(62% 0.089 267)",
+          "oklch(75% 0.071 267)",
+          "oklch(86% 0.045 267)",
+          "oklch(95% 0.018 267)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The title in the requisition header only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headings after a cap chip and a mono section number; 1.6rem under 760px."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Sub-headings inside a section."
+      },
+      "figure-head": {
+        "displayName": "Figure Head",
+        "purpose": "The 'Fig. n · Name' bar on each figure, in Requisition Blue."
+      },
+      "label": {
+        "displayName": "Field Label",
+        "purpose": "Field, tally and readout labels and guide titles, in Requisition Blue, sentence case."
+      },
+      "stamp": {
+        "displayName": "Stamp",
+        "purpose": "The rotated 'Cleared' / 'Missed' stamp on study tickets."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Reading text, at most 70ch; 16.5px under 760px."
+      },
+      "body-sm": {
+        "displayName": "Body Small",
+        "purpose": "Field values, table cells, the safety notice."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Figure captions and guide boxes."
+      },
+      "readout": {
+        "displayName": "Readout",
+        "purpose": "Live figure values with tabular figures; the tally uses 1.3rem."
+      },
+      "code": {
+        "displayName": "Code",
+        "purpose": "Command blocks; inline code at 0.86em."
+      },
+      "tag": {
+        "displayName": "Tag",
+        "purpose": "'Simulated data' and 'Illustrative inputs' labels."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "stamp-in",
+        "value": "transform .28s cubic-bezier(.2, 1.4, .4, 1)",
+        "purpose": "Ticket stamp springs from 40% scale to full at -8deg when τ clears or misses the study."
+      },
+      {
+        "name": "stamp-fade",
+        "value": "opacity .18s",
+        "purpose": "Stamp fades in alongside stamp-in."
+      },
+      {
+        "name": "ticket-state",
+        "value": "background-color .25s, border-color .25s, opacity .25s",
+        "purpose": "Ticket fill and outline change between sent, cleared and missed."
+      },
+      {
+        "name": "anchor-scroll",
+        "value": "scroll-behavior: smooth",
+        "purpose": "Contents links scroll to sections; scroll-padding-top 24px, 64px under 1100px."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "transition-duration: 1ms; animation-duration: 1ms; scroll-behavior: auto",
+        "purpose": "Applied to everything under prefers-reduced-motion: reduce."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "rail-collapse",
+        "value": "1100px",
+        "purpose": "Contents rail becomes a sticky horizontal bar; sheet inset 20px 28px."
+      },
+      {
+        "name": "compact",
+        "value": "760px",
+        "purpose": "16px gutter, one-column figures and fields, stacked tables, 8-across compact tickets."
+      },
+      {
+        "name": "minimum",
+        "value": "360px",
+        "purpose": "Narrowest supported width with no horizontal page scroll."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Filled requisition-blue action for the live demo (Connect, Analyze); no hover change, 45% opacity when disabled.",
+      "html": "<button class=\"ds-btn\" type=\"button\">Connect</button> <button class=\"ds-btn\" type=\"button\" disabled>Analyze</button>",
+      "css": ".ds-btn { font: 700 14.5px/1.2 var(--sans, 'Atkinson Hyperlegible Next', 'Atkinson Hyperlegible', system-ui, sans-serif); padding: 8px 13px; border-radius: 3px; border: 1.5px solid var(--form, #1C3F94); background: var(--form, #1C3F94); color: var(--paper, #FFFFFF); cursor: pointer; } .ds-btn:focus-visible { outline: 3px solid var(--form, #1C3F94); outline-offset: 2px; border-radius: 3px; } .ds-btn:disabled { opacity: .45; cursor: not-allowed; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "The page's working button: outlined in requisition blue, Header Wash on hover. Used for the 95% sensitivity button and figure presets.",
+      "html": "<button class=\"ds-btn-secondary\" type=\"button\">Set τ for 95% sensitivity</button> <button class=\"ds-btn-secondary\" type=\"button\">Hospital GPU</button>",
+      "css": ".ds-btn-secondary { font: 700 14.5px/1.2 var(--sans, 'Atkinson Hyperlegible Next', 'Atkinson Hyperlegible', system-ui, sans-serif); padding: 8px 13px; border-radius: 3px; border: 1.5px solid var(--form, #1C3F94); background: transparent; color: var(--form, #1C3F94); cursor: pointer; } .ds-btn-secondary:hover { background: var(--form-soft, #E6ECF8); } .ds-btn-secondary:focus-visible { outline: 3px solid var(--form, #1C3F94); outline-offset: 2px; border-radius: 3px; } .ds-btn-secondary:disabled { opacity: .45; cursor: not-allowed; }"
+    },
+    {
+      "name": "Number Input and Threshold Slider",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Mono inputs with a Carbon Grey label above, and the τ range with a square-cornered blue-edged thumb.",
+      "html": "<div class=\"ds-inputs\"><label class=\"ds-range-label\">Threshold τ <strong class=\"ds-range-v\">0.30</strong><input class=\"ds-range\" type=\"range\" min=\"0.01\" max=\"0.99\" step=\"0.01\" value=\"0.30\"></label><label class=\"ds-input-label\">Gate (ms)<input class=\"ds-input\" type=\"number\" value=\"8\" min=\"0\"></label><label class=\"ds-input-label\">Detector (ms)<input class=\"ds-input\" type=\"number\" value=\"40\" min=\"0\"></label></div>",
+      "css": ".ds-inputs { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; font: 400 15px/1.62 var(--sans, 'Atkinson Hyperlegible Next', 'Atkinson Hyperlegible', system-ui, sans-serif); color: var(--ink, #141A28); } .ds-range-label { display: flex; flex: 1 1 100%; gap: 14px; align-items: center; font-weight: 600; } .ds-range-v { font: 700 15px var(--mono, 'Atkinson Hyperlegible Mono', ui-monospace, Menlo, Consolas, monospace); font-variant-numeric: tabular-nums; } .ds-range { flex: 1; -webkit-appearance: none; appearance: none; height: 22px; background: transparent; accent-color: var(--form, #1C3F94); } .ds-range::-webkit-slider-runnable-track { height: 4px; background: var(--rule-strong, #93A5D2); border-radius: 2px; } .ds-range::-moz-range-track { height: 4px; background: var(--rule-strong, #93A5D2); border-radius: 2px; } .ds-range::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; margin-top: -7px; border-radius: 3px; background: var(--paper, #FFFFFF); border: 2px solid var(--form, #1C3F94); } .ds-range::-moz-range-thumb { width: 14px; height: 14px; border-radius: 3px; background: var(--paper, #FFFFFF); border: 2px solid var(--form, #1C3F94); } .ds-range:focus-visible { outline: 3px solid var(--form, #1C3F94); outline-offset: 2px; border-radius: 3px; } .ds-input-label { display: grid; gap: 3px; font-size: 14px; color: var(--muted, #4B5568); } .ds-input { width: 84px; font: 500 15px var(--mono, 'Atkinson Hyperlegible Mono', ui-monospace, Menlo, Consolas, monospace); padding: 6px 8px; border: 1px solid var(--rule-strong, #93A5D2); border-radius: 3px; background: var(--paper, #FFFFFF); color: var(--ink, #141A28); -moz-appearance: textfield; appearance: textfield; } .ds-input::-webkit-inner-spin-button, .ds-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; } .ds-input:focus-visible { outline: 3px solid var(--form, #1C3F94); outline-offset: 2px; border-radius: 3px; }"
+    },
+    {
+      "name": "Contents Rail",
+      "kind": "nav",
+      "refersTo": "contents-link",
+      "description": "Numbered contents with cap chips; the section in view is marked on Header Wash; the cap-code legend sits below.",
+      "html": "<nav class=\"ds-toc\" aria-label=\"Contents\"><p class=\"ds-toc-h\">Contents</p><ol class=\"ds-toc-list\"><li><a class=\"ds-toc-a\" href=\"#\"><span class=\"ds-toc-k\"></span><span class=\"ds-toc-cap\" style=\"--c:var(--cap-grey, #6B7384)\"></span>Summary</a></li><li><a class=\"ds-toc-a\" href=\"#\"><span class=\"ds-toc-k\">1</span><span class=\"ds-toc-cap\" style=\"--c:var(--cap-red, #B3312F)\"></span>Problem</a></li><li><a class=\"ds-toc-a\" href=\"#\" aria-current=\"true\"><span class=\"ds-toc-k\">2</span><span class=\"ds-toc-cap\" style=\"--c:var(--cap-lav, #6F4FA8)\"></span>Method</a></li><li><a class=\"ds-toc-a\" href=\"#\"><span class=\"ds-toc-k\">5</span><span class=\"ds-toc-cap\" style=\"--c:var(--cap-green, #24794C)\"></span>Evaluation protocol</a></li><li><a class=\"ds-toc-a\" href=\"#\"><span class=\"ds-toc-k\">7</span><span class=\"ds-toc-cap\" style=\"--c:var(--cap-gold, #A77D10)\"></span>Live demo</a></li></ol><dl class=\"ds-toc-code\" aria-label=\"Cap colour code\"><div><dt><span class=\"ds-toc-cap\" style=\"--c:var(--cap-lav, #6F4FA8)\"></span></dt><dd>Gate</dd></div><div><dt><span class=\"ds-toc-cap\" style=\"--c:var(--cap-blue, #2F7FC1)\"></span></dt><dd>Calibration</dd></div><div><dt><span class=\"ds-toc-cap\" style=\"--c:var(--cap-gold, #A77D10)\"></span></dt><dd>Detector</dd></div><div><dt><span class=\"ds-toc-cap\" style=\"--c:var(--cap-green, #24794C)\"></span></dt><dd>Evaluation</dd></div><div><dt><span class=\"ds-toc-cap\" style=\"--c:var(--cap-red, #B3312F)\"></span></dt><dd>Risk</dd></div></dl></nav>",
+      "css": ".ds-toc { width: 232px; padding: 20px 20px 20px 28px; border-right: 1px solid var(--rule, #CCD5EA); background: var(--paper, #FFFFFF); font: 400 15px/1.62 var(--sans, 'Atkinson Hyperlegible Next', 'Atkinson Hyperlegible', system-ui, sans-serif); } .ds-toc-h { margin: 0 0 8px; font: 700 13px/1 var(--label, 'Archivo', 'Arial Narrow', 'Roboto Condensed', system-ui, sans-serif); font-stretch: 85%; letter-spacing: .02em; color: var(--muted, #4B5568); } .ds-toc-list { list-style: none; margin: 0; padding: 0; } .ds-toc-a { display: flex; align-items: center; gap: 10px; padding: 6px 8px; margin: 0 -8px; border-radius: 4px; color: var(--muted, #4B5568); text-decoration: none; } .ds-toc-a:hover { color: var(--ink, #141A28); background: var(--field, #F4F6FB); } .ds-toc-a[aria-current=\"true\"] { color: var(--ink, #141A28); background: var(--form-soft, #E6ECF8); font-weight: 700; } .ds-toc-a:focus-visible { outline: 3px solid var(--form, #1C3F94); outline-offset: 2px; border-radius: 3px; } .ds-toc-k { width: 14px; font: 500 12px/1 var(--mono, 'Atkinson Hyperlegible Mono', ui-monospace, Menlo, Consolas, monospace); color: var(--muted, #4B5568); } .ds-toc-cap { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--c); flex: none; } .ds-toc-code { display: grid; gap: 4px; margin: 22px 0 0; font-size: 13px; color: var(--muted, #4B5568); } .ds-toc-code div { display: flex; align-items: center; gap: 8px; } .ds-toc-code dt, .ds-toc-code dd { margin: 0; } .ds-toc-code .ds-toc-cap { width: 9px; height: 9px; }"
+    },
+    {
+      "name": "Requisition Header",
+      "kind": "card",
+      "refersTo": "requisition-header",
+      "description": "The title block as the top of an order form: logo, display title, subtitle, then labelled Author / Status / Links cells.",
+      "html": "<header class=\"ds-req\"><div class=\"ds-req-top\"><svg class=\"ds-req-logo\" viewBox=\"0 0 128 128\" role=\"img\" aria-label=\"Chest X-ray Triage logo\"><defs><linearGradient id=\"ds-film\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\"><stop offset=\"0\" stop-color=\"#24496A\"/><stop offset=\"1\" stop-color=\"#0E1A24\"/></linearGradient></defs><rect x=\"4\" y=\"4\" width=\"120\" height=\"120\" rx=\"28\" fill=\"url(#ds-film)\"/><path d=\"M64 26 V102\" stroke=\"#E9EEF1\" stroke-opacity=\".45\" stroke-width=\"5\" stroke-linecap=\"round\"/><path d=\"M58 34 C41 35 30 56 30 79 C30 93 38 100 48 100 C55 100 58 94 58 86 Z\" fill=\"#E9EEF1\" fill-opacity=\".88\"/><path d=\"M70 34 C87 35 98 56 98 79 C98 93 90 100 80 100 C73 100 70 94 70 86 Z\" fill=\"#E9EEF1\" fill-opacity=\".88\"/><rect x=\"72\" y=\"58\" width=\"25\" height=\"22\" rx=\"3\" fill=\"none\" stroke=\"#F2B134\" stroke-width=\"4.5\"/></svg><div><h1 class=\"ds-req-h1\">Chest X-ray Triage</h1><p class=\"ds-req-sub\">A two-stage screening pipeline: a calibrated ResNet-50 gate decides which studies a YOLOv8 detector needs to read.</p></div></div><div class=\"ds-req-fields\"><div><span class=\"ds-flabel\">Author</span>Dang Hoang <span class=\"ds-req-muted\">· University of Georgia</span></div><div><span class=\"ds-flabel\">Status</span><p class=\"ds-req-status\"><i aria-hidden=\"true\"></i>Code, tests and site complete. Trained results pending.</p></div><div><span class=\"ds-flabel\">Links</span><div class=\"ds-req-links\"><a href=\"#\">Code</a><a href=\"#\">Model card</a><a href=\"#\">Guide</a></div></div></div></header>",
+      "css": ".ds-req { border: 1.5px solid var(--form, #1C3F94); border-radius: 4px; background: var(--paper, #FFFFFF); color: var(--ink, #141A28); font: 400 17px/1.62 var(--sans, 'Atkinson Hyperlegible Next', 'Atkinson Hyperlegible', system-ui, sans-serif); } .ds-req-top { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px; align-items: center; padding: 20px 22px 18px; border-bottom: 1.5px solid var(--form, #1C3F94); } .ds-req-logo { width: 58px; height: 58px; } .ds-req-h1 { margin: 0; font: 800 clamp(2.1rem, 4.4vw, 3.4rem)/1 var(--label, 'Archivo', 'Arial Narrow', 'Roboto Condensed', system-ui, sans-serif); font-stretch: 78%; letter-spacing: -.01em; } .ds-req-sub { margin: 8px 0 0; max-width: 62ch; font-size: 1.08rem; color: var(--muted, #4B5568); } .ds-req-fields { display: grid; grid-template-columns: 1.1fr 1.4fr 1.6fr; } .ds-req-fields > div { min-width: 0; padding: 10px 22px 12px; border-right: 1px solid var(--rule-strong, #93A5D2); } .ds-req-fields > div:last-child { border-right: 0; } .ds-flabel { display: block; margin-bottom: 4px; font: 700 12.5px/1.2 var(--label, 'Archivo', 'Arial Narrow', 'Roboto Condensed', system-ui, sans-serif); font-stretch: 85%; letter-spacing: .02em; color: var(--form, #1C3F94); } .ds-req-muted { color: var(--muted, #4B5568); } .ds-req-status { margin: 0; } .ds-req-status i { display: inline-block; width: 10px; height: 10px; margin-right: 8px; border-radius: 50%; background: var(--cap-gold, #A77D10); } .ds-req-links { display: flex; flex-wrap: wrap; gap: 4px 14px; } .ds-req-links a { font-weight: 600; color: var(--form, #1C3F94); text-underline-offset: 3px; text-decoration-thickness: 1px; } .ds-req-links a:hover { text-decoration-thickness: 2px; } .ds-req-links a:focus-visible { outline: 3px solid var(--form, #1C3F94); outline-offset: 2px; border-radius: 3px; }"
+    },
+    {
+      "name": "Study Ticket and Stamp",
+      "kind": "custom",
+      "refersTo": "ticket",
+      "description": "One simulated study as a specimen label, shown sent, cleared and missed; the stamp springs in when τ clears the study.",
+      "html": "<div class=\"ds-tickets\" role=\"list\"><div class=\"ds-ticket ds-ticket--sent\"><div class=\"ds-ticket-row\"><span>#06</span><span class=\"ds-ticket-cap\" style=\"--c:var(--cap-red, #B3312F)\"></span></div><div class=\"ds-ticket-bar\"><b style=\"left:30%\"></b><i style=\"left:calc(78% - 1px)\"></i></div><span class=\"ds-ticket-st\"><span class=\"ds-ticket-box\"><svg viewBox=\"0 0 10 10\" aria-hidden=\"true\"><path d=\"M1.5 5.2 4 7.6 8.6 2.4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/></svg></span>Detector</span><span class=\"ds-stamp\" aria-hidden=\"true\">Cleared</span></div><div class=\"ds-ticket ds-ticket--cleared\"><div class=\"ds-ticket-row\"><span>#02</span><span class=\"ds-ticket-cap\" style=\"--c:var(--cap-grey, #6B7384)\"></span></div><div class=\"ds-ticket-bar\"><b style=\"left:30%\"></b><i style=\"left:calc(14% - 1px)\"></i></div><span class=\"ds-ticket-st\"><span class=\"ds-ticket-box\"><svg viewBox=\"0 0 10 10\" aria-hidden=\"true\"><path d=\"M1.5 5.2 4 7.6 8.6 2.4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/></svg></span>Detector</span><span class=\"ds-stamp\" aria-hidden=\"true\">Cleared</span></div><div class=\"ds-ticket ds-ticket--missed\"><div class=\"ds-ticket-row\"><span>#21</span><span class=\"ds-ticket-cap\" style=\"--c:var(--cap-red, #B3312F)\"></span></div><div class=\"ds-ticket-bar\"><b style=\"left:30%\"></b><i style=\"left:calc(24% - 1px)\"></i></div><span class=\"ds-ticket-st\"><span class=\"ds-ticket-box\"><svg viewBox=\"0 0 10 10\" aria-hidden=\"true\"><path d=\"M1.5 5.2 4 7.6 8.6 2.4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/></svg></span>Detector</span><span class=\"ds-stamp\" aria-hidden=\"true\">Missed</span></div></div>",
+      "css": ".ds-tickets { display: grid; grid-template-columns: repeat(3, 104px); gap: 6px; } .ds-ticket { position: relative; padding: 6px 7px 5px; border: 1px solid var(--rule-strong, #93A5D2); border-radius: 3px; background: var(--paper, #FFFFFF); font: 500 11.5px/1.2 var(--mono, 'Atkinson Hyperlegible Mono', ui-monospace, Menlo, Consolas, monospace); color: var(--muted, #4B5568); transition: background-color .25s, border-color .25s, opacity .25s; } .ds-ticket-row { display: flex; align-items: center; justify-content: space-between; gap: 4px; } .ds-ticket-cap { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--c); } .ds-ticket-bar { position: relative; height: 4px; margin: 6px 0 5px; border-radius: 2px; background: var(--rule, #CCD5EA); } .ds-ticket-bar i { position: absolute; top: -3px; width: 2px; height: 10px; background: var(--ink, #141A28); } .ds-ticket-bar b { position: absolute; top: -4px; bottom: -4px; width: 0; border-left: 1.5px dashed var(--form, #1C3F94); } .ds-ticket-st { display: inline-flex; align-items: center; gap: 4px; font: 700 11px/1 var(--label, 'Archivo', 'Arial Narrow', 'Roboto Condensed', system-ui, sans-serif); font-stretch: 85%; color: var(--form, #1C3F94); } .ds-ticket-box { display: inline-grid; place-items: center; width: 11px; height: 11px; border: 1.5px solid var(--form, #1C3F94); border-radius: 2px; } .ds-ticket-box svg { width: 9px; height: 9px; opacity: 0; } .ds-stamp { position: absolute; right: 4px; bottom: 4px; padding: 1px 4px; border: 1.5px solid currentColor; border-radius: 2px; font: 800 10px/1.2 var(--label, 'Archivo', 'Arial Narrow', 'Roboto Condensed', system-ui, sans-serif); font-stretch: 80%; letter-spacing: .04em; color: var(--muted, #4B5568); opacity: 0; transform: rotate(-8deg) scale(.4); transition: transform .28s cubic-bezier(.2, 1.4, .4, 1), opacity .18s; pointer-events: none; } .ds-ticket--sent { border-color: var(--form, #1C3F94); } .ds-ticket--sent .ds-ticket-box svg { opacity: 1; } .ds-ticket--cleared { background: var(--field, #F4F6FB); border-color: var(--rule, #CCD5EA); } .ds-ticket--cleared .ds-ticket-bar i { background: var(--muted, #4B5568); } .ds-ticket--missed { border: 1.5px solid var(--cap-red, #B3312F); background: color-mix(in srgb, var(--cap-red, #B3312F) 7%, var(--paper, #FFFFFF)); } .ds-ticket--cleared .ds-ticket-st, .ds-ticket--missed .ds-ticket-st { visibility: hidden; } .ds-ticket--cleared .ds-stamp, .ds-ticket--missed .ds-stamp { opacity: 1; transform: rotate(-8deg) scale(1); } .ds-ticket--missed .ds-stamp { color: var(--cap-red, #B3312F); } @media (prefers-reduced-motion: reduce) { .ds-ticket, .ds-stamp { transition-duration: 1ms; } }"
+    },
+    {
+      "name": "Figure Frame",
+      "kind": "card",
+      "refersTo": "figure-frame",
+      "description": "Interactive figure: Header Wash figure head with cap chip, a 'Read it like this' guide, a readout grid, and a caption with the honesty tag.",
+      "html": "<figure class=\"ds-fig\"><div class=\"ds-frame\"><div class=\"ds-fig-head\"><span class=\"ds-fig-cap\" style=\"--c:var(--cap-lav, #6F4FA8)\"></span>Fig. 2 · Gate threshold</div><p class=\"ds-guide\"><b>Read it like this</b>Everything left of the blue line is cleared. Red bars left of it are abnormal studies the detector will never see.</p><dl class=\"ds-read\"><div><dt>Sensitivity</dt><dd>94.8%</dd></div><div><dt>Specificity</dt><dd>76.7%</dd></div><div><dt>Sent to detector</dt><dd>44.7%</dd></div><div><dt>Mean time / study</dt><dd>25.9 ms</dd></div></dl></div><figcaption class=\"ds-figcap\"><b>Fig. 2.</b> Gate threshold trade-off on 2,000 simulated studies (30% abnormal). <span class=\"ds-tag\">Simulated data</span></figcaption></figure>",
+      "css": ".ds-fig { margin: 0; font: 400 17px/1.62 var(--sans, 'Atkinson Hyperlegible Next', 'Atkinson Hyperlegible', system-ui, sans-serif); color: var(--ink, #141A28); } .ds-frame { padding: 18px; border: 1px solid var(--rule-strong, #93A5D2); border-radius: 3px; background: var(--paper, #FFFFFF); } .ds-fig-head { display: flex; align-items: center; gap: 10px; margin: -18px -18px 16px; padding: 10px 18px; border-bottom: 1px solid var(--rule, #CCD5EA); background: var(--form-soft, #E6ECF8); font: 700 14.5px/1.2 var(--label, 'Archivo', 'Arial Narrow', 'Roboto Condensed', system-ui, sans-serif); font-stretch: 88%; color: var(--form, #1C3F94); } .ds-fig-cap { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: var(--c); } .ds-guide { margin: 0 0 12px; padding: 10px 12px; font-size: 15px; background: var(--field, #F4F6FB); border: 1px solid var(--rule, #CCD5EA); border-radius: 3px; } .ds-guide b { display: block; margin-bottom: 4px; font: 700 13px/1 var(--label, 'Archivo', 'Arial Narrow', 'Roboto Condensed', system-ui, sans-serif); font-stretch: 85%; color: var(--form, #1C3F94); } .ds-read { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 12px 0 0; border: 1px solid var(--rule-strong, #93A5D2); border-radius: 3px; overflow: hidden; } .ds-read div { padding: 8px 12px; border-bottom: 1px solid var(--rule, #CCD5EA); } .ds-read div:nth-child(odd) { border-right: 1px solid var(--rule, #CCD5EA); } .ds-read div:nth-last-child(-n+2) { border-bottom: 0; } .ds-read dt { font: 700 12.5px/1.3 var(--label, 'Archivo', 'Arial Narrow', 'Roboto Condensed', system-ui, sans-serif); font-stretch: 88%; color: var(--form, #1C3F94); } .ds-read dd { margin: 0; font: 700 1.15rem/1.35 var(--mono, 'Atkinson Hyperlegible Mono', ui-monospace, Menlo, Consolas, monospace); font-variant-numeric: tabular-nums; } .ds-figcap { max-width: 72ch; margin-top: 10px; font-size: 15px; color: var(--muted, #4B5568); } .ds-figcap b { color: var(--ink, #141A28); } .ds-tag { display: inline-block; margin-left: 6px; padding: 0 6px; font: 600 12px/1.5 var(--mono, 'Atkinson Hyperlegible Mono', ui-monospace, Menlo, Consolas, monospace); color: var(--muted, #4B5568); border: 1px solid var(--rule-strong, #93A5D2); border-radius: 2px; vertical-align: 1px; }"
+    },
+    {
+      "name": "Section Heading and Field List",
+      "kind": "custom",
+      "refersTo": "field-label",
+      "description": "A numbered field on the order: cap chip, mono section number, condensed headline, then ruled label-over-value cells in two columns.",
+      "html": "<section class=\"ds-sec\"><h2 class=\"ds-h2\"><span class=\"ds-h2-cap\" style=\"--c:var(--cap-green, #24794C)\" aria-hidden=\"true\"></span><span class=\"ds-h2-n\">5</span>Evaluation protocol</h2><dl class=\"ds-fields\"><div><dt>Split</dt><dd>80 / 10 / 10 train, validation, test at image level, stratified on the abnormal label, fixed seed.</dd></div><div><dt>Selection</dt><dd>Best epoch, T and τ are chosen on validation. Test is used once.</dd></div><div><dt>Uncertainty</dt><dd>95% confidence intervals from 1,000 bootstrap resamples of test studies.</dd></div><div><dt>Latency</dt><dd>Warm-up excluded, GPU synchronized before timing, images preloaded; mean, p50 and p95 per study.</dd></div></dl></section>",
+      "css": ".ds-sec { font: 400 17px/1.62 var(--sans, 'Atkinson Hyperlegible Next', 'Atkinson Hyperlegible', system-ui, sans-serif); color: var(--ink, #141A28); } .ds-h2 { display: flex; align-items: center; gap: 12px; margin: 0 0 16px; font: 800 1.9rem/1.1 var(--label, 'Archivo', 'Arial Narrow', 'Roboto Condensed', system-ui, sans-serif); font-stretch: 80%; letter-spacing: -.005em; } .ds-h2-cap { display: inline-block; width: 16px; height: 16px; border-radius: 50%; background: var(--c); flex: none; } .ds-h2-n { padding: 4px 6px; font: 500 .95rem/1 var(--mono, 'Atkinson Hyperlegible Mono', ui-monospace, Menlo, Consolas, monospace); color: var(--form, #1C3F94); border: 1.5px solid var(--form, #1C3F94); border-radius: 3px; } .ds-fields { display: grid; grid-template-columns: 1fr 1fr; margin: 6px 0 0; border-top: 1.5px solid var(--form, #1C3F94); } .ds-fields > div { padding: 12px 18px 12px 0; border-bottom: 1px solid var(--rule, #CCD5EA); } .ds-fields > div:nth-child(odd) { padding-right: 24px; border-right: 1px solid var(--rule, #CCD5EA); } .ds-fields > div:nth-child(even) { padding-left: 24px; } .ds-fields dt { margin-bottom: 3px; font: 700 13px/1.2 var(--label, 'Archivo', 'Arial Narrow', 'Roboto Condensed', system-ui, sans-serif); font-stretch: 85%; letter-spacing: .01em; color: var(--form, #1C3F94); } .ds-fields dd { margin: 0; max-width: 68ch; font-size: 15.5px; } @media (max-width: 760px) { .ds-fields { grid-template-columns: 1fr; } .ds-fields > div:nth-child(odd), .ds-fields > div:nth-child(even) { padding: 12px 0; border-right: 0; } }"
+    },
+    {
+      "name": "Pending Result",
+      "kind": "custom",
+      "refersTo": "pending",
+      "description": "Results table before a real run: Header Wash header row and a dashed empty 'Pending' box in place of every value.",
+      "html": "<div class=\"ds-table-wrap\"><table class=\"ds-table\"><thead><tr><th>Metric (test split)</th><th class=\"ds-v\">Value</th></tr></thead><tbody><tr><td>Gate AUC (95% CI)</td><td class=\"ds-v\"><span class=\"ds-pending\">Pending</span></td></tr><tr><td>mAP@0.4, two-stage</td><td class=\"ds-v\"><span class=\"ds-pending\">Pending</span></td></tr><tr><td>Gate misses by finding class</td><td class=\"ds-v\"><span class=\"ds-pending\">Pending</span></td></tr></tbody></table></div>",
+      "css": ".ds-table-wrap { overflow-x: auto; border: 1px solid var(--rule-strong, #93A5D2); border-radius: 3px; } .ds-table { width: 100%; border-collapse: collapse; font: 400 15.5px/1.62 var(--sans, 'Atkinson Hyperlegible Next', 'Atkinson Hyperlegible', system-ui, sans-serif); color: var(--ink, #141A28); } .ds-table th, .ds-table td { padding: 10px 14px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--rule, #CCD5EA); } .ds-table th { background: var(--form-soft, #E6ECF8); font: 700 13.5px/1.3 var(--label, 'Archivo', 'Arial Narrow', 'Roboto Condensed', system-ui, sans-serif); font-stretch: 88%; color: var(--form, #1C3F94); } .ds-table tr:last-child td { border-bottom: 0; } .ds-table .ds-v { text-align: right; white-space: nowrap; } .ds-pending { display: inline-block; min-width: 92px; padding: 1px 8px; text-align: center; font: 600 12.5px/1.5 var(--mono, 'Atkinson Hyperlegible Mono', ui-monospace, Menlo, Consolas, monospace); color: var(--muted, #4B5568); background: var(--paper, #FFFFFF); border: 1px dashed var(--rule-strong, #93A5D2); border-radius: 2px; }"
+    },
+    {
+      "name": "Safety Notice",
+      "kind": "card",
+      "refersTo": "safety-notice",
+      "description": "Always-present 'not a medical device' notice: 1.5px red edge on a 6% red wash with a red cap chip.",
+      "html": "<div class=\"ds-notice\" role=\"note\"><span class=\"ds-notice-cap\" aria-hidden=\"true\"></span><p><strong>Research project, not a medical device.</strong> Outputs are not a diagnosis and must not be used for patient care. Do not upload images that contain patient information.</p></div>",
+      "css": ".ds-notice { display: flex; gap: 14px; align-items: flex-start; padding: 12px 16px; border: 1.5px solid var(--cap-red, #B3312F); border-radius: 4px; background: color-mix(in srgb, var(--cap-red, #B3312F) 6%, var(--paper, #FFFFFF)); font: 400 15.5px/1.62 var(--sans, 'Atkinson Hyperlegible Next', 'Atkinson Hyperlegible', system-ui, sans-serif); color: var(--ink, #141A28); } .ds-notice p { margin: 0; } .ds-notice-cap { display: inline-block; flex: none; width: 14px; height: 14px; margin-top: 4px; border-radius: 50%; background: var(--cap-red, #B3312F); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Requisition for One Pipeline",
+    "overview": "The page is filled in like a lab order. White form stock carries the content, and requisition-blue ink draws the form itself: the outer rules, the field labels, the section numbers, the focus ring, the threshold line. What is written into the form is near-black ink. Every section, figure and pipeline stage carries a round cap chip in a specimen-tube colour, and each colour stands for one stage of the pipeline, as the legend at the foot of the contents rail states.\n\nDensity is that of a form, not a brochure. Facts sit in labelled, ruled cells and tables; numbers sit in a monospace with tabular figures; results that do not exist yet are empty dashed boxes marked Pending. The surface is flat. Hierarchy comes from rule weight, a pale blue wash on header bars and the condensed heading face, never from shadow or gradient.\n\nMotion is small and mechanical. A study ticket takes a rubber stamp, \"Cleared\" or \"Missed\", when the threshold passes it, and nothing moves on its own. This system describes `site/index.html`. The FastAPI demo UI at `app/static/index.html` is an older, separate surface and does not follow it. The logo (`site/logo.svg`) is a fixed brand asset with its own colours; it is placed, never restyled.",
+    "keyCharacteristics": [
+      "White form stock, requisition-blue rules and labels, near-black reading ink.",
+      "Six specimen-cap colours used as a fixed categorical code, shown as round chips.",
+      "Three type hands: condensed Archivo for the printed form, Atkinson Hyperlegible Next for reading, Atkinson Hyperlegible Mono for anything counted or copied.",
+      "Facts in ruled fields and tables, never in bullet walls.",
+      "Flat stock: hairline and 1.5px rules, tinted header bars, 2–4px corners.",
+      "Complete light and dark schemes on the same token names."
+    ],
+    "rules": [
+      {
+        "name": "The Cap Code Rule",
+        "body": "A cap colour names a pipeline stage: lavender gate, light blue calibration, gold detector, green evaluation, red risk, grey neutral. It appears as a round chip beside the section, figure or stage it codes, and the rail legend states the code. A new section takes the cap of the stage it belongs to, or grey.",
+        "section": "colors"
+      },
+      {
+        "name": "The Blue Ink Rule",
+        "body": "Requisition blue draws the form: rules, labels, numbers, focus, the τ line, primary actions. Reading text is ink, and blue reaches running text only as a link.",
+        "section": "colors"
+      },
+      {
+        "name": "The Three Hands Rule",
+        "body": "Archivo condensed prints the form: headings, labels, figure heads, stamps. Atkinson Hyperlegible Next is what you read. Atkinson Hyperlegible Mono is what you count or copy: IDs, τ, readouts, code. A string belongs to one hand only.",
+        "section": "typography"
+      },
+      {
+        "name": "The Sentence Case Rule",
+        "body": "Labels, headings and stamps are set in sentence case with tracking no wider than 0.04em. Nothing on the form is set in all caps.",
+        "section": "typography"
+      },
+      {
+        "name": "The Ruled Field Rule",
+        "body": "Facts go in labelled field cells, not bullet lists. A field list opens with a 1.5px requisition-blue rule, separates cells with 1px hairlines, and puts the label above its value. It runs two columns with a hairline between them on wide screens and one column under 760px; the one-column variant sets a 170px label column beside the value.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat Stock Rule",
+        "body": "Paper does not lift. No box-shadow, gradient fill or blur on any page surface; a part is set apart by its rule weight or a tint. The logo's film gradient belongs to the brand asset and is not a surface treatment.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Only Caps Are Round Rule",
+        "body": "A circle is a cap chip, the status dot or a step counter. Fields, buttons, frames and tickets keep 2–4px corners.",
+        "section": "shapes"
+      },
+      {
+        "name": "The Empty Box Rule",
+        "body": "A metric with no published value is an empty box: Mono 600 at 12.5px, Carbon Grey \"Pending\", in a 1px dashed Form Rule outline with 2px corners, at least 92px wide, right-aligned in its table row. It is never replaced by a placeholder number.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do give every section, figure and pipeline stage one cap chip from the code (lavender gate, light blue calibration, gold detector, green evaluation, red risk, grey neutral), and keep the rail legend in step with it.",
+      "Do put facts in labelled, ruled fields or tables: a 1.5px Requisition Blue rule on top, 1px Hairlines between cells, the label in Archivo condensed above the value.",
+      "Do set IDs, τ, readouts and code in Atkinson Hyperlegible Mono with tabular figures, and reading text in Atkinson Hyperlegible Next at 17px / 1.62 within 70ch.",
+      "Do open each interactive figure with a figure head (Header Wash, cap chip, \"Fig. n · Name\"), a \"Read it like this\" guide box and one-click presets, and caption it below with a bold \"Fig. n.\"",
+      "Do mark simulated figures and illustrative inputs with the Mono tag next to the figure, and show unpublished metrics as the dashed Pending box.",
+      "Do define each colour in both schemes on the same token name, and have canvas and SVG figures read tokens at draw time and redraw when the scheme changes.",
+      "Do separate parts with rule weight (1.5px Requisition Blue for the form's structure, 1px Form Rule for frames, 1px Hairline inside) and with Field Tint or Header Wash, not with depth."
+    ],
+    "donts": [
+      "Don't add box-shadows, gradient fills or blur to page surfaces; the logo's gradient stays inside the logo.",
+      "Don't use a cap colour as decoration or give a new section a colour outside the code; red stays with findings, misses, risk and errors.",
+      "Don't set labels or headings in all caps, or end button labels with an arrow.",
+      "Don't set body copy in Requisition Blue; blue in running text is a link.",
+      "Don't round anything past 4px except cap chips, the status dot and step counters.",
+      "Don't draw anything that imitates a radiograph; figures stay schematic boxes, lines, bars and curves."
+    ]
+  }
+}

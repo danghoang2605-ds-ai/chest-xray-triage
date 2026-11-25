@@ -15,7 +15,7 @@
 /* Requisition: white form stock ruled in requisition blue; specimen-cap colours code each part. */
 :root {
   --paper: #FFFFFF; --field: #F4F6FB; --ink: #141A28; --muted: #4B5568; --form: #1C3F94; --form-soft: #E6ECF8;
-  --rule: #CCD5EA; --rule-strong: #93A5D2;
+  --rule: #CCD5EA; --rule-strong: #93A5D2; --input-line: #6B7FB3;
   --cap-lav: #6F4FA8; --cap-gold: #A77D10; --cap-blue: #2F7FC1; --cap-green: #24794C; --cap-red: #B3312F; --cap-grey: #6B7384;
   --surface: #F4F6FB; --accent: #1C3F94; --finding: #B3312F; --finding-text: #9A2422; --normal: #8A93A6; --second: #2F7FC1;
   --ok: #1D6E46; --warn: #B3312F; --code-bg: #F4F6FB;
@@ -27,7 +27,7 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --paper: #0D1322; --field: #141C30; --ink: #E8EDF6; --muted: #A9B4CA; --form: #8DADF5; --form-soft: #1A2540;
-    --rule: #263354; --rule-strong: #3D5185;
+    --rule: #263354; --rule-strong: #3D5185; --input-line: #6A80B8; --input-line: #6A80B8;
     --cap-lav: #B49BE6; --cap-gold: #E3BD55; --cap-blue: #6FB4EC; --cap-green: #5CC690; --cap-red: #F0807C; --cap-grey: #9AA3B5;
     --surface: #141C30; --accent: #8DADF5; --finding: #F0807C; --finding-text: #F59A96; --normal: #8E98AD; --second: #6FB4EC;
     --ok: #5CC690; --warn: #F0807C; --code-bg: #141C30; color-scheme: dark;
@@ -35,7 +35,7 @@
 }
 :root[data-theme="dark"] {
   --paper: #0D1322; --field: #141C30; --ink: #E8EDF6; --muted: #A9B4CA; --form: #8DADF5; --form-soft: #1A2540;
-  --rule: #263354; --rule-strong: #3D5185;
+  --rule: #263354; --rule-strong: #3D5185; --input-line: #6A80B8;
   --cap-lav: #B49BE6; --cap-gold: #E3BD55; --cap-blue: #6FB4EC; --cap-green: #5CC690; --cap-red: #F0807C; --cap-grey: #9AA3B5;
   --surface: #141C30; --accent: #8DADF5; --finding: #F0807C; --finding-text: #F59A96; --normal: #8E98AD; --second: #6FB4EC;
   --ok: #5CC690; --warn: #F0807C; --code-bg: #141C30; color-scheme: dark;
@@ -206,7 +206,7 @@ canvas, svg.plot { width: 100%; display: block; }
 input[type=range] { width: 100%; accent-color: var(--form); }
 .inputs { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; margin-top: 10px; }
 .inputs label { display: grid; gap: 3px; font-size: 14px; color: var(--muted); }
-.inputs input { width: 84px; font: 500 15px var(--mono); padding: 6px 8px; border: 1px solid var(--rule-strong); border-radius: 3px; background: var(--paper); color: var(--ink); }
+.inputs input { width: 84px; font: 500 15px var(--mono); padding: 6px 8px; border: 1px solid var(--input-line); border-radius: 3px; background: var(--paper); color: var(--ink); }
 .btn { font: 700 14.5px/1.2 var(--sans); padding: 8px 13px; border-radius: 3px; border: 1.5px solid var(--form); background: var(--form); color: var(--paper); cursor: pointer; }
 .btn.secondary { background: transparent; color: var(--form); }
 .btn.secondary:hover { background: var(--form-soft); }
@@ -222,7 +222,7 @@ dl.read dd { margin: 0; font: 700 1.15rem/1.35 var(--mono); }
 .key i { display: inline-block; width: 11px; height: 11px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
 .calc { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 14px; }
 .calc label { display: grid; gap: 4px; font-size: 14px; color: var(--muted); }
-.calc input { font: 500 15px var(--mono); padding: 7px 9px; border: 1px solid var(--rule-strong); border-radius: 3px; background: var(--paper); color: var(--ink); width: 100%; }
+.calc input { font: 500 15px var(--mono); padding: 7px 9px; border: 1px solid var(--input-line); border-radius: 3px; background: var(--paper); color: var(--ink); width: 100%; }
 .banner { border: 1.5px solid var(--cap-gold); background: var(--field); border-radius: 3px; padding: 10px 14px; margin: 0 0 14px; font-size: 15px; }
 h3.sub { font-size: 1.05rem; margin: 22px 0 8px; }
 ul.b { margin: 0 0 16px; padding-left: 22px; max-width: 70ch; }
@@ -233,7 +233,7 @@ ol.steps p, ol.steps .msg { max-width: 68ch; }
 ol.steps > li { counter-increment: s; position: relative; padding: 0 0 18px 44px; }
 ol.steps > li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--form); color: var(--paper); font: 700 14px/28px var(--mono); text-align: center; }
 .field { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
-.field input[type=url] { flex: 1 1 240px; font: 15px var(--mono); padding: 8px 10px; border: 1px solid var(--rule-strong); border-radius: 3px; background: var(--paper); color: var(--ink); }
+.field input[type=url] { flex: 1 1 240px; font: 15px var(--mono); padding: 8px 10px; border: 1px solid var(--input-line); border-radius: 3px; background: var(--paper); color: var(--ink); }
 .msg { font-size: 14.5px; min-height: 1.4em; margin-top: 6px; }
 .msg.ok { color: var(--ok); } .msg.err { color: var(--warn); }
 #out { display: none; } #out.on { display: block; }
@@ -730,7 +730,7 @@ python -m src.plots --config configs/default.yaml &amp;&amp; python -m src.repor
       <rect x="20" y="472" width="200" height="62" rx="3" fill="${bg}" stroke="${css("--cap-gold")}" stroke-width="2"/>
       <text x="36" y="498" font-size="17" font-weight="600" fill="${ink}">Stage 2: detect</text>
       <text x="36" y="520" font-size="15" fill="${muted}">YOLOv8s, 1024² input</text>
-      <text x="36" y="566" font-size="16" font-weight="600" fill="${ink}">→ Boxes for 14 finding types</text>
+      <text x="36" y="566" font-size="16" font-weight="600" fill="${ink}">Output: boxes for 14 finding types</text>
       <text x="36" y="590" font-size="14" fill="${muted}">Grad-CAM explains the gate decision</text>`;
   }
 
@@ -794,8 +794,8 @@ python -m src.plots --config configs/default.yaml &amp;&amp; python -m src.repor
     ctx.textAlign = "left"; ctx.fillText("0", x0, h - 5); ctx.textAlign = "right"; ctx.fillText("1", x0 + pw, h - 5);
     ctx.textAlign = "center"; ctx.fillText("score", x0 + pw / 2, h - 5);
     ctx.fillStyle = css("--ink");
-    if (tx > 70) { ctx.textAlign = "right"; ctx.fillText("← cleared", tx - 6, top + 4); }
-    if (pw - tx > 70) { ctx.textAlign = "left"; ctx.fillText("flagged →", tx + 6, top + 4); }
+    if (tx > 70) { ctx.textAlign = "right"; ctx.fillText("cleared", tx - 8, top + 4); }
+    if (pw - tx > 70) { ctx.textAlign = "left"; ctx.fillText("flagged", tx + 8, top + 4); }
   }
   function updateGate() {
     const tau = +$("tau").value; $("tau-v").textContent = tau.toFixed(2);
