@@ -29,7 +29,7 @@ jobs:
           # figures from a real run (python -m src.plots); skipped if none exist yet
           cp docs/figures/*.png _site/figures/ 2>/dev/null || true
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
 
