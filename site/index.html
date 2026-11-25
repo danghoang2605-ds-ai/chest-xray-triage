@@ -87,7 +87,9 @@ input[type=range]::-webkit-slider-runnable-track { height: 4px; background: var(
 input[type=range]::-moz-range-track { height: 4px; background: var(--rule-strong); border-radius: 2px; }
 input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; margin-top: -7px; border-radius: 3px; background: var(--paper); border: 2px solid var(--form); }
 input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 3px; background: var(--paper); border: 2px solid var(--form); }
-input[type=file] { font: 15px var(--sans); color: var(--muted); }
+input[type=file] { font: 15px var(--sans); color: var(--muted); max-width: 100%; min-width: 0; }
+input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 input[type=file]::file-selector-button { font: 700 14.5px/1.2 var(--sans); padding: 8px 13px; margin-right: 12px; border-radius: 3px; border: 1.5px solid var(--form); background: transparent; color: var(--form); cursor: pointer; }
 
 /* requisition header */
@@ -169,7 +171,7 @@ dl.fields > div:nth-child(odd) { padding-right: 24px; border-right: 1px solid va
 dl.fields > div:nth-child(even) { padding-left: 24px; }
 dl.fields dt { font: 700 13px/1.2 var(--label); font-stretch: 85%; color: var(--form); letter-spacing: .01em; margin-bottom: 3px; }
 dl.fields dd { margin: 0; font-size: 15.5px; }
-dl.fields.one { grid-template-columns: 1fr; max-width: 760px; }
+dl.fields.one { grid-template-columns: 1fr; }
 dl.fields.one > div { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 18px; padding-left: 0 !important; padding-right: 12px !important; border-right: 0 !important; }
 dl.fields.one dt { margin: 2px 0 0; }
 
@@ -226,7 +228,8 @@ h3.sub { font-size: 1.05rem; margin: 22px 0 8px; }
 ul.b { margin: 0 0 16px; padding-left: 22px; max-width: 70ch; }
 
 /* live demo */
-ol.steps { padding-left: 0; list-style: none; counter-reset: s; max-width: 760px; }
+ol.steps { padding-left: 0; list-style: none; counter-reset: s; }
+ol.steps p, ol.steps .msg { max-width: 68ch; }
 ol.steps > li { counter-increment: s; position: relative; padding: 0 0 18px 44px; }
 ol.steps > li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--form); color: var(--paper); font: 700 14px/28px var(--mono); text-align: center; }
 .field { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
@@ -262,15 +265,16 @@ footer { border-top: 1.5px solid var(--form); margin: 56px 0 0; padding: 18px 0 
   .ticket { padding: 4px 4px 3px; }
   .ticket .row span:first-child { display: none; }
   .ticket .st { font-size: 0; gap: 0; }
-  .ticket .stamp { font-size: 8px; right: 2px; bottom: 2px; padding: 0 2px; }
+  .ticket .stamp { font-size: 7.5px; line-height: 1.1; right: 2px; bottom: 1px; padding: 0 2px; border-width: 1px; }
   .ticket .row { justify-content: center; }
   .ticket .bar { margin: 4px 0 2px; }
   .ticket.sent { background: var(--form-soft); }
   .strip { padding: 12px 10px; margin-top: 12px; display: flex; flex-direction: column; }
-  .strip > .strip-ctl { order: 1; margin: 0 0 10px; }
-  .strip > .tickets { order: 2; }
-  .strip > .tally { order: 3; }
-  .strip > .legend { order: 4; }
+  .strip > .strip-ctl { order: 1; margin: 0 0 8px; }
+  .strip > div.legend { order: 2; margin: 0 0 8px; font-size: 12.5px; }
+  .strip > .tickets { order: 3; }
+  .strip > .tally { order: 4; }
+  .strip > p.legend { order: 5; }
   .strip-head h2 { font-size: 1.2rem; display: block; }
   .strip-head h2 .tag { font-size: 11px; }
   .strip-head p { display: none; }
@@ -312,7 +316,7 @@ footer { border-top: 1.5px solid var(--form); margin: 56px 0 0; padding: 18px 0 
       <li><a href="#problem"><span class="k">1</span><span class="cap" style="--c:var(--cap-red)"></span>Problem</a></li>
       <li><a href="#method"><span class="k">2</span><span class="cap" style="--c:var(--cap-lav)"></span>Method</a></li>
       <li><a href="#decisions"><span class="k">3</span><span class="cap" style="--c:var(--cap-grey)"></span>Design decisions</a></li>
-      <li><a href="#figures"><span class="k">4</span><span class="cap" style="--c:var(--cap-blue)"></span>Interactive figures</a></li>
+      <li><a href="#figures"><span class="k">4</span><span class="cap" style="--c:var(--cap-grey)"></span>Interactive figures</a></li>
       <li><a href="#protocol"><span class="k">5</span><span class="cap" style="--c:var(--cap-green)"></span>Evaluation protocol</a></li>
       <li><a href="#results"><span class="k">6</span><span class="cap" style="--c:var(--cap-green)"></span>Results</a></li>
       <li><a href="#demo"><span class="k">7</span><span class="cap" style="--c:var(--cap-gold)"></span>Live demo</a></li>
@@ -441,7 +445,7 @@ footer { border-top: 1.5px solid var(--form); margin: 56px 0 0; padding: 18px 0 
 
     <section id="figures">
       <div class="col">
-        <h2><span class="cap" style="--c:var(--cap-blue)" aria-hidden="true"></span><span class="n">4</span>Interactive figures</h2>
+        <h2><span class="cap" style="--c:var(--cap-grey)" aria-hidden="true"></span><span class="n">4</span>Interactive figures</h2>
         <p>Figures 2–4 run in your browser on <strong>simulated data</strong>: they show mechanisms, not model results. Figure 5 is a calculator that starts from illustrative inputs you can replace. Every control works with a keyboard; the boxes in Fig. 3 move with the arrow keys.</p>
       </div>
 
