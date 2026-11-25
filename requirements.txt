@@ -1,7 +1,7 @@
 torch>=2.3
 torchvision>=0.18
 ultralytics>=8.2
-ensemble-boxes>=1.0.9
+ensemble-boxes>=1.0.11
 numpy
 pandas
 scikit-learn
