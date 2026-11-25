@@ -1,6 +1,6 @@
 torch>=2.3
 torchvision>=0.18
-ultralytics>=8.2
+ultralytics>=8.4.216
 ensemble-boxes>=1.0.9
 numpy
 pandas
