@@ -1,5 +1,5 @@
 torch>=2.3
-torchvision>=0.18
+torchvision>=0.29.2
 ultralytics>=8.2
 ensemble-boxes>=1.0.9
 numpy
