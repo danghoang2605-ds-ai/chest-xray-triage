@@ -13,7 +13,7 @@ pillow
 pyyaml
 tqdm
 pydicom
-fastapi>=0.110
+fastapi>=0.165.0
 uvicorn[standard]
 python-multipart
 pytest
